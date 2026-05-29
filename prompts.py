@@ -41,7 +41,15 @@ Formatting rules:
 - Always format the response in markdown with clear section headers.
 - Write in plain English. No corporate jargon.
 - Do not use em dashes. Use commas, periods, or parentheses instead.
-- Every pain point and discovery question must connect to the specific persona's role and day-to-day reality, not just the company in general."""
+- Every pain point and discovery question must connect to the specific persona's role and day-to-day reality, not just the company in general.
+
+The person reading this brief is a sales rep going into a discovery call within the next 24 hours. They need to sound informed, not over-prepared. Write as if you are briefing a sharp colleague right before they walk into a meeting, not writing a consulting report.
+
+Confidence calibration:
+- Use "confirmed" when a fact comes from search results.
+- Use "likely" when it is a reasonable inference from company size, industry, or role.
+- Use "possible" when it is speculative but worth exploring.
+- Never state a pain point as certain if it is not backed by evidence in the brief."""
 
 
 PLANNING_PROMPT = """Before generating a sales call brief, plan the approach.
@@ -75,8 +83,8 @@ In 2 short paragraphs, summarize:
 - Any relevant industry dynamics or pressures that shape this conversation
 
 Rules:
-- Lead with what the search results support. When a fact comes from a result, name the source in parentheses, e.g. (per TechCrunch).
-- Mark anything not supported by the results as "(inferred)".
+- Lead with what the search results support. When a fact comes from a result, name the source in parentheses, e.g. (per TechCrunch), and treat it as confirmed.
+- Label anything not supported by the results as "likely" (a reasonable inference from company size, industry, or role) or "possible" (speculative but worth exploring).
 - Do not invent funding figures, dates, or initiatives. If the results are thin or say no search was run, say so plainly and rely on labeled inference.
 - Keep it factual and concise. This will be used as background for the briefing."""
 
@@ -96,13 +104,13 @@ Background context:
 Return your response in this exact markdown structure. Use these headers verbatim.
 
 ## Account
-2 to 3 sentences on what the company does, who they serve, and their current situation. Flag anything inferred.
+2 to 3 sentences on what the company does, who they serve, and their current situation. Label each claim as confirmed, likely, or possible.
 
 ## Persona
 2 to 3 sentences on what this role likely owns, cares about day-to-day, and is measured on. Make it role-specific, not a generic job description.
 
 ## Likely Priorities
-3 to 4 bullet points on what this person is probably focused on right now. Label anything speculative with (Assumption).
+3 to 4 bullet points on what this person is probably focused on right now. Label each as likely or possible.
 
 ## Potential Pain Points
 3 to 5 pain points specific to this persona at this company. For each: one sentence naming the problem, one sentence on why it matters commercially.
