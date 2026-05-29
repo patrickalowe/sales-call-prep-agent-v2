@@ -16,9 +16,12 @@ briefing is grounded in current, sourced information rather than the model's
 training knowledge alone.
 """
 
+import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
+import anthropic
 from anthropic import Anthropic
 
 from prompts import (
@@ -33,13 +36,44 @@ MODEL = "claude-sonnet-4-6"
 
 # Anthropic's server-side web search tool. Claude runs the searches on
 # Anthropic's infrastructure and folds the results (with sources) back into
-# its answer. max_uses caps how many searches one briefing can trigger, which
-# bounds both latency and cost.
-WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search", "max_uses": 5}
+# its answer. max_uses caps how many searches one briefing can trigger. Each
+# search also pulls result text into the context as input tokens, so a lower
+# cap also keeps us under per-minute rate limits on entry usage tiers.
+WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search", "max_uses": 3}
 
 # Safety cap on the server-side tool loop, so a runaway search session can't
 # spin forever. Each pause_turn is one resume.
 _MAX_SEARCH_RESUMES = 8
+
+# How many times to wait out a rate limit (429) before giving up. The search
+# step can push input tokens past an entry-tier per-minute cap; waiting for the
+# rolling window to reset lets the run finish instead of failing outright.
+_MAX_RATE_LIMIT_WAITS = 6
+_DEFAULT_RATE_LIMIT_WAIT = 60  # seconds, used when the API sends no retry-after
+
+
+def _create_with_retry(client, **kwargs):
+    """Call messages.create, waiting out rate limits instead of failing.
+
+    On a 429 we honor the API's retry-after header when present, otherwise
+    wait a full minute (the per-minute token window) and try again. A short
+    notice goes to stderr so a long wait does not look like a hang.
+    """
+    for attempt in range(_MAX_RATE_LIMIT_WAITS + 1):
+        try:
+            return client.messages.create(**kwargs)
+        except anthropic.RateLimitError as e:
+            if attempt >= _MAX_RATE_LIMIT_WAITS:
+                raise
+            retry_after = e.response.headers.get("retry-after") if e.response else None
+            wait = int(retry_after) if retry_after and retry_after.isdigit() else _DEFAULT_RATE_LIMIT_WAIT
+            print(
+                f"  (rate limit reached; waiting {wait}s for your per-minute "
+                f"window to reset, then continuing...)",
+                file=sys.stderr,
+                flush=True,
+            )
+            time.sleep(wait)
 
 
 def _call(client, prompt, max_tokens, tools=None):
@@ -62,7 +96,7 @@ def _call(client, prompt, max_tokens, tools=None):
         if tools:
             kwargs["tools"] = tools
 
-        response = client.messages.create(**kwargs)
+        response = _create_with_retry(client, **kwargs)
 
         if response.stop_reason == "pause_turn":
             # Server-side search loop hit its iteration limit. Append what we
@@ -163,7 +197,9 @@ def run_agent(company_name, persona_title, notes="", on_step=None):
         if on_step:
             on_step(msg)
 
-    client = Anthropic()
+    # max_retries=0: we own rate-limit handling in _create_with_retry, where the
+    # wait is sized to the per-minute window rather than the SDK's short backoff.
+    client = Anthropic(max_retries=0)
 
     step("Planning approach...")
     plan = plan_approach(client, company_name, persona_title, notes)

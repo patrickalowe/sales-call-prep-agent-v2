@@ -10,6 +10,7 @@ Run with: python app.py
 Then open http://localhost:5001 in your browser.
 """
 
+import anthropic
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 
@@ -38,12 +39,17 @@ def generate():
         result = run_agent(company_name=company, persona_title=persona, notes=notes)
         saved_path = save_output(result, company)
         return jsonify({"result": result, "saved_as": str(saved_path)})
+    except anthropic.AuthenticationError:
+        return jsonify({"error": "Invalid API key. Check your ANTHROPIC_API_KEY."}), 401
+    except anthropic.RateLimitError:
+        return jsonify({"error": "Hit your account's rate limit (tokens per minute). Wait a minute and try again, or raise the limit at console.anthropic.com/settings/limits."}), 429
+    except anthropic.APIStatusError as e:
+        # Only a genuine 400 low-balance error is a billing problem; a 429
+        # rate limit also mentions "credits" but must not be labeled that way.
+        if e.status_code == 400 and "credit balance is too low" in str(e).lower():
+            return jsonify({"error": "Insufficient API credits. Add credits at console.anthropic.com."}), 402
+        return jsonify({"error": f"API error {e.status_code}: {e.message}"}), 500
     except Exception as e:
-        error_msg = str(e)
-        if "401" in error_msg:
-            return jsonify({"error": "Invalid API key. Check your ANTHROPIC_API_KEY."}), 500
-        if "credit" in error_msg.lower():
-            return jsonify({"error": "Insufficient API credits. Add credits at console.anthropic.com."}), 500
         return jsonify({"error": f"Something went wrong: {e}"}), 500
 
 

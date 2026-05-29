@@ -1,6 +1,14 @@
+=== THIS IS THE v2 FOLDER (live web search) ===
+
+Same tool as v1, but the "Context" step searches the web for current
+news before writing the brief. You will see:
+  Researching company (live web search)...
+That line is how you know you are running v2, not v1.
+
+
 === FIRST TIME SETUP (do this once) ===
 
-cd ~/Projects/sales-call-prep
+cd ~/Projects/sales-call-prep-v2
 
 python3 -m venv venv
 source venv/bin/activate
@@ -10,7 +18,7 @@ pip install -r requirements.txt
 
 === EVERY TIME YOU COME BACK ===
 
-cd ~/Projects/sales-call-prep
+cd ~/Projects/sales-call-prep-v2
 source venv/bin/activate
 
 

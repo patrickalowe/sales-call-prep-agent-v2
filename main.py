@@ -11,6 +11,7 @@ import argparse
 import json
 import sys
 
+import anthropic
 from dotenv import load_dotenv
 
 from agent import run_agent, save_output
@@ -87,14 +88,25 @@ def main():
     except KeyboardInterrupt:
         print("\n\nCancelled.")
         sys.exit(0)
-    except Exception as e:
-        error_msg = str(e)
-        if "401" in error_msg:
-            print("\nError: Invalid API key. Check that ANTHROPIC_API_KEY is correct.")
-        elif "credit" in error_msg.lower():
+    except anthropic.AuthenticationError:
+        print("\nError: Invalid API key. Check that ANTHROPIC_API_KEY in .env is correct.")
+        sys.exit(1)
+    except anthropic.RateLimitError:
+        print("\nError: Hit your account's rate limit (tokens per minute on your usage tier).")
+        print("Wait a minute and run it again, or raise the limit by adding credits at")
+        print("https://console.anthropic.com/settings/limits")
+        sys.exit(1)
+    except anthropic.APIStatusError as e:
+        # The genuine low-balance error is a 400 with this message. Match on it
+        # specifically so a rate limit (whose message also says "credits") is
+        # never mislabeled as a billing problem.
+        if e.status_code == 400 and "credit balance is too low" in str(e).lower():
             print("\nError: Insufficient API credits. Add credits at console.anthropic.com.")
         else:
-            print(f"\nError: {e}")
+            print(f"\nError: API error {e.status_code}: {e.message}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\nError: {e}")
         sys.exit(1)
 
     output_path = save_output(output, company)
