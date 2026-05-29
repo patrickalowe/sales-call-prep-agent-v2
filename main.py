@@ -61,6 +61,8 @@ def main():
     parser.add_argument("--company", help="Company name")
     parser.add_argument("--persona", help="Prospect role or title")
     parser.add_argument("--notes", default="", help="Optional context for the rep")
+    parser.add_argument("--no-search", action="store_true",
+                        help="Skip live web search (cheaper and faster; uses training knowledge only)")
     args = parser.parse_args()
 
     if args.input:
@@ -84,6 +86,7 @@ def main():
             persona_title=persona,
             notes=notes,
             on_step=lambda msg: print(f"  {msg}"),
+            use_search=not args.no_search,
         )
     except KeyboardInterrupt:
         print("\n\nCancelled.")

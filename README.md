@@ -159,6 +159,14 @@ You can also run it with everything on one line:
 python3 main.py --company "Acme Logistics" --persona "VP of Operations" --notes "Mid-market 3PL, expanded into last-mile."
 ```
 
+To skip live web search for a cheaper, faster run (training knowledge only), add `--no-search`:
+
+```bash
+python3 main.py --company "Acme Logistics" --persona "VP of Operations" --no-search
+```
+
+Either way, the run prints its token usage and an estimated cost at the end, so you can see exactly what each briefing spends.
+
 **Website version:**
 
 ```bash
@@ -240,7 +248,7 @@ Done. Briefing saved to: output/capital_one_20260525_1428.md
 
 Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py` and can be edited without touching any other step. A single system prompt applies to all four calls and sets the agent's role and rules.
 
-`gather_context()` in `agent.py` is where live research happens. It calls Claude with Anthropic's server-side web search tool (`web_search_20260209`), capped at five searches per briefing. Claude runs the searches, reads the results, and returns a sourced summary that feeds straight into the briefing step. The prompt instructs it to separate what it verified via search from what it is inferring, and to name sources inline.
+`gather_context()` in `agent.py` is where live research happens. It calls Claude with Anthropic's server-side web search tool (`web_search_20260209`), capped at two searches per briefing to keep it fast and token-light. Claude runs the searches, reads the results, and returns a sourced summary that feeds straight into the briefing step. The prompt instructs it to separate what it verified via search from what it is inferring, and to name sources inline.
 
 ---
 
@@ -282,7 +290,7 @@ Both `main.py` and `app.py` import the same `agent.py`. Improve a prompt or a st
 ## Limitations
 
 - **Search quality varies by account.** Live web search finds far more on well-covered public companies than on small or stealthy ones. When search returns little, the brief falls back to clearly labeled inference rather than inventing facts.
-- **Slower than v1.** Running live searches adds time to the context step, so a briefing now takes longer than the old training-data-only version. The tradeoff is current, sourced information.
+- **Slower and pricier than v1 when searching.** Live search adds time and tokens to the context step (it pulls web pages into the prompt). Search is capped at one query per briefing, every run prints its estimated cost, and `--no-search` gives a fast ~$0.05 run for quick testing. The tradeoff for searching is current, sourced information.
 - **One briefing per run.** Batch mode is not yet implemented.
 - **Output quality scales with input quality.** A company name alone produces a more generic briefing than one with specific rep notes.
 - **No CRM integration.** Briefings save as local markdown files.

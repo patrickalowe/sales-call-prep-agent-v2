@@ -65,13 +65,12 @@ Persona: {persona_title}
 Planning notes:
 {plan}
 
-Use the web search tool to find current, specific information. Prioritize:
-- Recent news: funding rounds, acquisitions, layoffs, expansions, earnings
-- Leadership changes or who currently holds this role (or roles like it)
-- Recent product launches, strategy shifts, or public initiatives
-- Industry pressures affecting this company right now
+Use the web search tool sparingly: run at most 2 focused searches, and make them count. Aim a single search at the highest-value, most current signal for this call, for example:
+- Recent news: funding, acquisitions, layoffs, expansions, or earnings
+- Leadership changes or who currently holds this role
+- A recent product launch or strategy shift
 
-Then, in 2 to 3 short paragraphs, summarize:
+Then, in 2 short paragraphs, summarize:
 - What is currently true about this company (lead with what you found in search)
 - What someone in this role typically owns, cares about, and is measured on
 - Any relevant industry dynamics or pressures that shape this conversation

@@ -37,9 +37,45 @@ MODEL = "claude-sonnet-4-6"
 # Anthropic's server-side web search tool. Claude runs the searches on
 # Anthropic's infrastructure and folds the results (with sources) back into
 # its answer. max_uses caps how many searches one briefing can trigger. Each
-# search also pulls result text into the context as input tokens, so a lower
-# cap also keeps us under per-minute rate limits on entry usage tiers.
-WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search", "max_uses": 3}
+# search also pulls result text into the context as input tokens (and each
+# pause/resume re-sends that text), so each extra search adds real cost.
+# One focused search keeps the per-briefing spend low for testing.
+WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search", "max_uses": 1}
+
+# Sonnet 4.6 pricing so each run can report its own estimated cost. Dollars
+# per token for text, plus the per-request fee for server-side web search.
+_PRICE_INPUT = 3.0 / 1_000_000
+_PRICE_OUTPUT = 15.0 / 1_000_000
+_PRICE_CACHE_READ = 0.30 / 1_000_000
+_PRICE_CACHE_WRITE = 3.75 / 1_000_000
+_PRICE_WEB_SEARCH = 0.01  # per search request
+
+
+def _new_usage():
+    return {"input": 0, "output": 0, "cache_read": 0, "cache_write": 0, "searches": 0}
+
+
+def _record_usage(acc, u):
+    """Add one response's usage into the running accumulator."""
+    if acc is None or u is None:
+        return
+    acc["input"] += getattr(u, "input_tokens", 0) or 0
+    acc["output"] += getattr(u, "output_tokens", 0) or 0
+    acc["cache_read"] += getattr(u, "cache_read_input_tokens", 0) or 0
+    acc["cache_write"] += getattr(u, "cache_creation_input_tokens", 0) or 0
+    server = getattr(u, "server_tool_use", None)
+    if server is not None:
+        acc["searches"] += getattr(server, "web_search_requests", 0) or 0
+
+
+def _estimate_cost(acc):
+    return (
+        acc["input"] * _PRICE_INPUT
+        + acc["output"] * _PRICE_OUTPUT
+        + acc["cache_read"] * _PRICE_CACHE_READ
+        + acc["cache_write"] * _PRICE_CACHE_WRITE
+        + acc["searches"] * _PRICE_WEB_SEARCH
+    )
 
 # Safety cap on the server-side tool loop, so a runaway search session can't
 # spin forever. Each pause_turn is one resume.
@@ -76,13 +112,14 @@ def _create_with_retry(client, **kwargs):
             time.sleep(wait)
 
 
-def _call(client, prompt, max_tokens, tools=None):
+def _call(client, prompt, max_tokens, tools=None, usage=None):
     """Make an API call and return the combined text response.
 
     When `tools` includes the web search tool, Claude may pause mid-turn to run
     searches (stop_reason == "pause_turn"); we resume until it finishes. The
     response can contain several blocks (search calls, results, text), so we
-    join every text block rather than reading only the first.
+    join every text block rather than reading only the first. Token/search
+    usage from every response (including resumes) is added to `usage`.
     """
     messages = [{"role": "user", "content": prompt}]
 
@@ -97,6 +134,7 @@ def _call(client, prompt, max_tokens, tools=None):
             kwargs["tools"] = tools
 
         response = _create_with_retry(client, **kwargs)
+        _record_usage(usage, response.usage)
 
         if response.stop_reason == "pause_turn":
             # Server-side search loop hit its iteration limit. Append what we
@@ -108,31 +146,34 @@ def _call(client, prompt, max_tokens, tools=None):
     return "".join(b.text for b in response.content if b.type == "text").strip()
 
 
-def plan_approach(client, company_name, persona_title, notes):
+def plan_approach(client, company_name, persona_title, notes, usage=None):
     """Step 1: Plan the angle before generating the brief."""
     prompt = PLANNING_PROMPT.format(
         company_name=company_name,
         persona_title=persona_title,
         notes=notes or "None provided.",
     )
-    return _call(client, prompt, max_tokens=400)
+    return _call(client, prompt, max_tokens=400, usage=usage)
 
 
-def gather_context(client, company_name, persona_title, plan):
-    """Step 2: Research the company and persona using live web search.
+def gather_context(client, company_name, persona_title, plan, use_search=True, usage=None):
+    """Step 2: Research the company and persona.
 
-    This is the step that grounds the brief in current reality (recent news,
-    funding, leadership, product launches) instead of stale training data.
+    With use_search=True this grounds the brief in current reality (recent
+    news, funding, leadership) via live web search. With use_search=False it
+    falls back to the model's training knowledge only, which is faster and
+    much cheaper, for quick test runs.
     """
     prompt = CONTEXT_PROMPT.format(
         company_name=company_name,
         persona_title=persona_title,
         plan=plan,
     )
-    return _call(client, prompt, max_tokens=2000, tools=[WEB_SEARCH_TOOL])
+    tools = [WEB_SEARCH_TOOL] if use_search else None
+    return _call(client, prompt, max_tokens=1000, tools=tools, usage=usage)
 
 
-def generate_brief(client, company_name, persona_title, notes, plan, context):
+def generate_brief(client, company_name, persona_title, notes, plan, context, usage=None):
     """Step 3: Generate the full seven-section briefing."""
     prompt = BRIEFING_PROMPT.format(
         company_name=company_name,
@@ -141,13 +182,13 @@ def generate_brief(client, company_name, persona_title, notes, plan, context):
         plan=plan,
         context=context,
     )
-    return _call(client, prompt, max_tokens=3000)
+    return _call(client, prompt, max_tokens=2000, usage=usage)
 
 
-def review_brief(client, brief):
+def review_brief(client, brief, usage=None):
     """Step 4: Flag weak spots in the generated output."""
     prompt = REVIEW_PROMPT.format(brief=brief)
-    return _call(client, prompt, max_tokens=400)
+    return _call(client, prompt, max_tokens=400, usage=usage)
 
 
 def format_output(company_name, persona_title, brief, review):
@@ -186,12 +227,17 @@ def save_output(content, company):
     return filepath
 
 
-def run_agent(company_name, persona_title, notes="", on_step=None):
+def run_agent(company_name, persona_title, notes="", on_step=None, use_search=True):
     """
     Run the full four-step agent workflow and return formatted markdown.
 
     on_step is an optional callback that receives a status string at each step.
     main.py uses it to print progress without this module knowing about the UI.
+
+    use_search toggles live web search in the context step. True (default)
+    grounds the brief in current information; False is the cheaper, faster
+    training-knowledge-only path for quick test runs. The final on_step message
+    reports token usage and an estimated dollar cost for the run.
     """
     def step(msg):
         if on_step:
@@ -200,17 +246,24 @@ def run_agent(company_name, persona_title, notes="", on_step=None):
     # max_retries=0: we own rate-limit handling in _create_with_retry, where the
     # wait is sized to the per-minute window rather than the SDK's short backoff.
     client = Anthropic(max_retries=0)
+    usage = _new_usage()
 
     step("Planning approach...")
-    plan = plan_approach(client, company_name, persona_title, notes)
+    plan = plan_approach(client, company_name, persona_title, notes, usage=usage)
 
-    step("Researching company (live web search)...")
-    context = gather_context(client, company_name, persona_title, plan)
+    step("Researching company (live web search)..." if use_search
+         else "Gathering context (no search, training data only)...")
+    context = gather_context(client, company_name, persona_title, plan,
+                             use_search=use_search, usage=usage)
 
     step("Generating briefing...")
-    brief = generate_brief(client, company_name, persona_title, notes, plan, context)
+    brief = generate_brief(client, company_name, persona_title, notes, plan, context, usage=usage)
 
     step("Running self-check...")
-    review = review_brief(client, brief)
+    review = review_brief(client, brief, usage=usage)
+
+    cost = _estimate_cost(usage)
+    step(f"Usage: {usage['input']:,} in + {usage['output']:,} out tokens, "
+         f"{usage['searches']} search(es) -> est. ${cost:.3f}")
 
     return format_output(company_name, persona_title, brief, review)
