@@ -1,6 +1,13 @@
-# Sales Call Prep Agent
+# Sales Call Prep Agent (v2)
 
 A Python tool that turns a company name, a prospect's job title, and a few optional notes into a structured pre-call briefing. It researches the account with live web search, so the brief reflects current news and not just the model's training data. Use it two ways: a terminal version that saves the brief as a timestamped markdown file, or a local website with a simple form.
+
+> **What's new in v2** (the [v1 repo](https://github.com/patrickalowe/sales-call-prep-agent) wrote briefs from the model's training knowledge only):
+> - **Live web research** via [Tavily](https://tavily.com): the context step runs three targeted searches and grounds the brief in current news, funding, and leadership.
+> - **Cost readout** printed after every run (tokens + estimated dollars), plus a `--no-search` flag for cheap offline-style test runs.
+> - **Sturdier under real conditions**: accurate error messages (rate limits are no longer mislabeled as billing problems) and automatic waiting through per-minute rate limits.
+>
+> Requires two keys: `ANTHROPIC_API_KEY` and `TAVILY_API_KEY` (see Step 6).
 
 ---
 
