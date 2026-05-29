@@ -85,9 +85,11 @@ In 2 short paragraphs, summarize:
 - Any relevant industry dynamics or pressures that shape this conversation
 
 Rules:
-- Lead with what the search results support. When a fact comes from a result, name the source in parentheses, e.g. (per TechCrunch), and treat it as confirmed.
-- Label anything not supported by the results as "likely" (a reasonable inference from company size, industry, or role) or "possible" (speculative but worth exploring).
-- Do not invent funding figures, dates, or initiatives. If the results are thin or say no search was run, say so plainly and rely on labeled inference.
+- Pull specific facts from the search results (product names, funding amounts, exec names, recent announcements) and cite the source inline, e.g. (per TechCrunch). Do not paraphrase without citing.
+- If two results contradict each other, note the conflict.
+- If the results contain nothing useful, say "Search results yielded no usable intelligence for this section" and rely entirely on labeled inference.
+- Treat facts cited from a source as confirmed. Label anything not supported by the results as "likely" (a reasonable inference from company size, industry, or role) or "possible" (speculative but worth exploring).
+- Do not invent funding figures, dates, or initiatives.
 - Keep it factual and concise. This will be used as background for the briefing."""
 
 
@@ -115,7 +117,12 @@ Return your response in this exact markdown structure. Use these headers verbati
 3 to 4 bullet points on what this person is probably focused on right now. Label each as likely or possible.
 
 ## Potential Pain Points
-3 to 5 pain points specific to this persona at this company. For each: one sentence naming the problem, one sentence on why it matters commercially.
+3 to 5 pain points specific to this persona at this company. Format each as:
+**Pain:** [One sentence naming the specific problem]
+**Why it matters:** [One sentence on the commercial or career consequence for this person]
+**Signal to listen for:** [One phrase or question that would confirm this pain is real]
+
+Do not list pain points that apply to every company in this industry.
 
 ## Discovery Questions
 Exactly 5 open-ended questions. No yes or no questions. No leading questions. Should feel natural in a real call.
@@ -136,7 +143,7 @@ Rewrite the two sections to a higher standard:
 
 Discovery Questions: pressure-test all five. Replace any that can be answered with yes or no, that lead the prospect to an answer, that stack two questions into one, or that are generic enough to ask any company. Keep exactly five open-ended questions that invite a real answer and connect to this persona's day-to-day.
 
-Sample Outreach: tighten it. Keep it under 100 words with a specific subject line. The opening must tie to a concrete priority or recent fact from the brief, not generic flattery. End with one clear, low-friction ask. Cut any sentence that could be sent to any company.
+Sample Outreach: tighten it. Keep it under 100 words with a specific subject line. The subject line must be specific enough that deleting the company name would make it meaningless. The opening line must reference something from the Account or Persona section, not flattery. Cut any sentence that uses the words "help," "solution," "value," or "leverage." End with one clear, low-friction ask.
 
 Return ONLY these two sections, using these exact headers and nothing else (no preamble, no other sections, no closing commentary):
 
@@ -154,10 +161,13 @@ REVIEW_PROMPT = """Review this sales call brief and flag anything that would mak
 Check for:
 - Pain points or priorities that apply to any company, not this specific one
 - Discovery questions answerable with yes or no
-- Claims presented as fact that should be labeled as assumptions
+- Claims presented as fact that should be labeled likely or possible
 - Any section that is too generic to be useful
 
 For each issue, write one line naming it and one line suggesting the fix.
 If a section is strong, skip it.
 If the brief is solid overall, say so in one sentence at the end.
+
+Final test: Would a senior rep who had never heard of this company find this brief genuinely useful, or would they rewrite it before the call? If the answer is rewrite, identify the one section most responsible and flag it.
+
 Keep the review under 150 words."""
