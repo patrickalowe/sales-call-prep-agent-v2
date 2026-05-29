@@ -1,9 +1,13 @@
-=== THIS IS THE v2 FOLDER (live web search) ===
+=== THIS IS THE v2 FOLDER (live web search via Tavily) ===
 
 Same tool as v1, but the "Context" step searches the web for current
-news before writing the brief. You will see:
+news (using Tavily) before writing the brief. You will see:
   Researching company (live web search)...
 That line is how you know you are running v2, not v1.
+
+NEEDS TWO KEYS in .env:
+  ANTHROPIC_API_KEY=...   (Claude, writes the brief)
+  TAVILY_API_KEY=tvly-... (Tavily, does the search - get it at app.tavily.com)
 
 
 === FIRST TIME SETUP (do this once) ===

@@ -119,27 +119,22 @@ This only needs to be done once.
 
 ---
 
-### Step 6 — Add your API key
+### Step 6 — Add your API keys
 
-The tool uses Claude to generate briefings. You need an API key from Anthropic.
+This tool uses **two** services: Claude (to write the briefing) and Tavily (to search the web). You need a key for each.
 
-1. Go to [console.anthropic.com](https://console.anthropic.com) and create an account
-2. Get your API key from the dashboard
-3. In the project folder, create a file called `.env` and add this line:
+1. **Anthropic** — go to [console.anthropic.com](https://console.anthropic.com), create an account, and copy your API key. A $5 credit top-up runs many briefings.
+2. **Tavily** — go to [app.tavily.com](https://app.tavily.com), create an account, and copy your API key (it starts with `tvly-`). The free tier covers plenty of testing.
+3. In the project folder, create a file called `.env` with both keys, one per line:
 
 ```
-ANTHROPIC_API_KEY=your_key_here
+ANTHROPIC_API_KEY=your_anthropic_key_here
+TAVILY_API_KEY=your_tavily_key_here
 ```
 
-Replace `your_key_here` with your actual key. A $5 credit top-up runs hundreds of briefings.
+Replace each value with your actual key. The `.env` file is never committed to git.
 
-To create the `.env` file from Terminal:
-
-```bash
-echo 'ANTHROPIC_API_KEY=your_key_here' > .env
-```
-
-Replace `your_key_here` with your actual key before running it.
+> Tip: if you only want to test without searching the web, you can skip the Tavily key and always run with `--no-search` (see Step 7).
 
 ---
 
@@ -248,7 +243,7 @@ Done. Briefing saved to: output/capital_one_20260525_1428.md
 
 Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py` and can be edited without touching any other step. A single system prompt applies to all four calls and sets the agent's role and rules.
 
-`gather_context()` in `agent.py` is where live research happens. It calls Claude with Anthropic's server-side web search tool (`web_search_20260209`), capped at two searches per briefing to keep it fast and token-light. Claude runs the searches, reads the results, and returns a sourced summary that feeds straight into the briefing step. The prompt instructs it to separate what it verified via search from what it is inferring, and to name sources inline.
+`gather_context()` in `agent.py` is where live research happens. It runs one [Tavily](https://tavily.com) web search (see `search.py`), trims the results, and passes them to Claude as context. Claude then writes a sourced summary that feeds straight into the briefing step. Doing the search ourselves (rather than via Claude's server-side tool) keeps token usage low: only the trimmed result snippets enter the prompt, not whole web pages. The prompt instructs Claude to lead with what the results support, name sources inline, and label anything else as inferred. The search provider is isolated in `search.py`, so swapping Tavily for another engine later only touches that one file.
 
 ---
 
@@ -259,7 +254,7 @@ Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py
 | Python 3.9+ | Core language |
 | [Anthropic Python SDK](https://github.com/anthropics/anthropic-sdk-python) | Claude API client |
 | Claude Sonnet (`claude-sonnet-4-6`) | Language model |
-| Anthropic web search tool (`web_search_20260209`) | Live, sourced research in the context step |
+| [Tavily](https://tavily.com) (`tavily-python`) | Live web search for the context step (its own API key) |
 | python-dotenv | Loads the API key from `.env` |
 | Flask | Serves the website version |
 
@@ -273,6 +268,7 @@ Both launchers share a single engine. No databases.
 sales-call-prep/
 ├── agent.py             # Shared engine: calls the Claude API, returns markdown
 ├── prompts.py           # One prompt per agent step plus a shared system prompt
+├── search.py            # Tavily web-search wrapper (the only search-provider code)
 ├── main.py              # Terminal launcher: input modes, validation, file output
 ├── app.py               # Website launcher: Flask form and result page
 ├── templates/
@@ -289,8 +285,8 @@ Both `main.py` and `app.py` import the same `agent.py`. Improve a prompt or a st
 
 ## Limitations
 
-- **Search quality varies by account.** Live web search finds far more on well-covered public companies than on small or stealthy ones. When search returns little, the brief falls back to clearly labeled inference rather than inventing facts.
-- **Slower and pricier than v1 when searching.** Live search adds time and tokens to the context step (it pulls web pages into the prompt). Search is capped at one query per briefing, every run prints its estimated cost, and `--no-search` gives a fast ~$0.05 run for quick testing. The tradeoff for searching is current, sourced information.
+- **Search quality varies by account.** The Tavily search finds far more on well-covered public companies than on small or stealthy ones. When results are thin, the brief falls back to clearly labeled inference rather than inventing facts.
+- **One search per briefing.** The context step runs a single Tavily query (one Tavily credit, free-tier friendly). Because only trimmed result snippets enter the prompt, a full run stays cheap — about $0.04 in Claude tokens and under a minute. Every run prints its estimated cost; `--no-search` skips Tavily entirely for an offline-style test run.
 - **One briefing per run.** Batch mode is not yet implemented.
 - **Output quality scales with input quality.** A company name alone produces a more generic briefing than one with specific rep notes.
 - **No CRM integration.** Briefings save as local markdown files.
@@ -299,7 +295,7 @@ Both `main.py` and `app.py` import the same `agent.py`. Improve a prompt or a st
 
 ## Future improvements
 
-- ~~Connect `gather_context()` to live web search for current, sourced context~~ — **done in v2** (Anthropic's web search tool)
+- ~~Connect `gather_context()` to live web search for current, sourced context~~ — **done in v2** (Tavily web search)
 - Surface the specific prospect's public background and recent news (the legitimate, search-based version of a LinkedIn lookup)
 - Batch mode: accept a CSV of accounts, output a folder of briefings
 - CRM push: write briefings directly into HubSpot or Salesforce as contact notes

@@ -11,9 +11,10 @@ run_agent() is the main entry point. It runs all four steps and returns
 a formatted markdown string ready to save.
 
 Each step is a separate function so they can be read, tested, or swapped
-out independently. The gather_context() step uses live web search so the
-briefing is grounded in current, sourced information rather than the model's
-training knowledge alone.
+out independently. The gather_context() step runs a live Tavily web search
+(see search.py) and feeds the results to Claude, so the briefing is grounded
+in current, sourced information rather than the model's training knowledge
+alone.
 """
 
 import sys
@@ -31,24 +32,17 @@ from prompts import (
     BRIEFING_PROMPT,
     REVIEW_PROMPT,
 )
+from search import search_web
 
 MODEL = "claude-sonnet-4-6"
 
-# Anthropic's server-side web search tool. Claude runs the searches on
-# Anthropic's infrastructure and folds the results (with sources) back into
-# its answer. max_uses caps how many searches one briefing can trigger. Each
-# search also pulls result text into the context as input tokens (and each
-# pause/resume re-sends that text), so each extra search adds real cost.
-# One focused search keeps the per-briefing spend low for testing.
-WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search", "max_uses": 1}
-
-# Sonnet 4.6 pricing so each run can report its own estimated cost. Dollars
-# per token for text, plus the per-request fee for server-side web search.
+# Sonnet 4.6 pricing so each run can report its own estimated Claude cost,
+# in dollars per token. (Tavily search is billed separately in Tavily credits,
+# not here; we report the search count instead.)
 _PRICE_INPUT = 3.0 / 1_000_000
 _PRICE_OUTPUT = 15.0 / 1_000_000
 _PRICE_CACHE_READ = 0.30 / 1_000_000
 _PRICE_CACHE_WRITE = 3.75 / 1_000_000
-_PRICE_WEB_SEARCH = 0.01  # per search request
 
 
 def _new_usage():
@@ -56,34 +50,26 @@ def _new_usage():
 
 
 def _record_usage(acc, u):
-    """Add one response's usage into the running accumulator."""
+    """Add one Claude response's token usage into the running accumulator."""
     if acc is None or u is None:
         return
     acc["input"] += getattr(u, "input_tokens", 0) or 0
     acc["output"] += getattr(u, "output_tokens", 0) or 0
     acc["cache_read"] += getattr(u, "cache_read_input_tokens", 0) or 0
     acc["cache_write"] += getattr(u, "cache_creation_input_tokens", 0) or 0
-    server = getattr(u, "server_tool_use", None)
-    if server is not None:
-        acc["searches"] += getattr(server, "web_search_requests", 0) or 0
 
 
 def _estimate_cost(acc):
+    """Estimated Claude (text) cost only; Tavily searches are tracked separately."""
     return (
         acc["input"] * _PRICE_INPUT
         + acc["output"] * _PRICE_OUTPUT
         + acc["cache_read"] * _PRICE_CACHE_READ
         + acc["cache_write"] * _PRICE_CACHE_WRITE
-        + acc["searches"] * _PRICE_WEB_SEARCH
     )
 
-# Safety cap on the server-side tool loop, so a runaway search session can't
-# spin forever. Each pause_turn is one resume.
-_MAX_SEARCH_RESUMES = 8
-
-# How many times to wait out a rate limit (429) before giving up. The search
-# step can push input tokens past an entry-tier per-minute cap; waiting for the
-# rolling window to reset lets the run finish instead of failing outright.
+# How many times to wait out a rate limit (429) before giving up. Waiting for
+# the per-minute window to reset lets a run finish instead of failing outright.
 _MAX_RATE_LIMIT_WAITS = 6
 _DEFAULT_RATE_LIMIT_WAIT = 60  # seconds, used when the API sends no retry-after
 
@@ -112,37 +98,21 @@ def _create_with_retry(client, **kwargs):
             time.sleep(wait)
 
 
-def _call(client, prompt, max_tokens, tools=None, usage=None):
-    """Make an API call and return the combined text response.
+def _call(client, prompt, max_tokens, usage=None):
+    """Make one Claude API call and return the text response.
 
-    When `tools` includes the web search tool, Claude may pause mid-turn to run
-    searches (stop_reason == "pause_turn"); we resume until it finishes. The
-    response can contain several blocks (search calls, results, text), so we
-    join every text block rather than reading only the first. Token/search
-    usage from every response (including resumes) is added to `usage`.
+    Web search now happens before this call (via Tavily, in gather_context),
+    so there are no server-side tools and no pause/resume loop here. Token
+    usage is added to `usage`.
     """
-    messages = [{"role": "user", "content": prompt}]
-
-    for _ in range(_MAX_SEARCH_RESUMES + 1):
-        kwargs = {
-            "model": MODEL,
-            "max_tokens": max_tokens,
-            "system": SYSTEM_PROMPT,
-            "messages": messages,
-        }
-        if tools:
-            kwargs["tools"] = tools
-
-        response = _create_with_retry(client, **kwargs)
-        _record_usage(usage, response.usage)
-
-        if response.stop_reason == "pause_turn":
-            # Server-side search loop hit its iteration limit. Append what we
-            # have and re-send; the API resumes the search automatically.
-            messages.append({"role": "assistant", "content": response.content})
-            continue
-        break
-
+    response = _create_with_retry(
+        client,
+        model=MODEL,
+        max_tokens=max_tokens,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    _record_usage(usage, response.usage)
     return "".join(b.text for b in response.content if b.type == "text").strip()
 
 
@@ -157,20 +127,28 @@ def plan_approach(client, company_name, persona_title, notes, usage=None):
 
 
 def gather_context(client, company_name, persona_title, plan, use_search=True, usage=None):
-    """Step 2: Research the company and persona.
+    """Step 2: Research the company and persona, then summarize.
 
-    With use_search=True this grounds the brief in current reality (recent
-    news, funding, leadership) via live web search. With use_search=False it
-    falls back to the model's training knowledge only, which is faster and
-    much cheaper, for quick test runs.
+    With use_search=True we run one Tavily web search and hand the results to
+    Claude, grounding the brief in current reality (recent news, funding,
+    leadership). With use_search=False we skip the search and let Claude work
+    from training knowledge only, which is faster and cheaper for test runs.
     """
+    if use_search:
+        query = f"{company_name} company recent news, funding, leadership, and strategy"
+        search_results = search_web(query)
+        if usage is not None:
+            usage["searches"] += 1
+    else:
+        search_results = "No web search was run for this briefing."
+
     prompt = CONTEXT_PROMPT.format(
         company_name=company_name,
         persona_title=persona_title,
         plan=plan,
+        search_results=search_results,
     )
-    tools = [WEB_SEARCH_TOOL] if use_search else None
-    return _call(client, prompt, max_tokens=1000, tools=tools, usage=usage)
+    return _call(client, prompt, max_tokens=1000, usage=usage)
 
 
 def generate_brief(client, company_name, persona_title, notes, plan, context, usage=None):
@@ -263,7 +241,7 @@ def run_agent(company_name, persona_title, notes="", on_step=None, use_search=Tr
     review = review_brief(client, brief, usage=usage)
 
     cost = _estimate_cost(usage)
-    step(f"Usage: {usage['input']:,} in + {usage['output']:,} out tokens, "
-         f"{usage['searches']} search(es) -> est. ${cost:.3f}")
+    step(f"Usage: {usage['input']:,} in + {usage['output']:,} out tokens "
+         f"-> est. ${cost:.3f} (Claude) + {usage['searches']} Tavily search(es)")
 
     return format_output(company_name, persona_title, brief, review)

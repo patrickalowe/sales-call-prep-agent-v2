@@ -58,27 +58,25 @@ In 4 to 6 bullet points, outline:
 Be brief and direct. This is a planning note, not a document."""
 
 
-CONTEXT_PROMPT = """Research this prospect using web search, then organize what you find before the full brief is written.
+CONTEXT_PROMPT = """Organize the context for this prospect before the full brief is written.
 
 Company: {company_name}
 Persona: {persona_title}
 Planning notes:
 {plan}
 
-Use the web search tool sparingly: run at most 2 focused searches, and make them count. Aim a single search at the highest-value, most current signal for this call, for example:
-- Recent news: funding, acquisitions, layoffs, expansions, or earnings
-- Leadership changes or who currently holds this role
-- A recent product launch or strategy shift
+Live web search results (from a search engine; may be noisy or partly irrelevant):
+{search_results}
 
-Then, in 2 short paragraphs, summarize:
-- What is currently true about this company (lead with what you found in search)
+In 2 short paragraphs, summarize:
+- What is currently true about this company, leading with specifics supported by the search results above
 - What someone in this role typically owns, cares about, and is measured on
 - Any relevant industry dynamics or pressures that shape this conversation
 
 Rules:
-- Clearly separate what you VERIFIED via search from what you are INFERRING. Mark inferences with "(inferred)".
-- When a fact comes from search, name the source in parentheses, e.g. (per TechCrunch, March 2026).
-- Do not invent funding figures, dates, or initiatives. If search returns nothing useful, say so plainly and rely on labeled inference.
+- Lead with what the search results support. When a fact comes from a result, name the source in parentheses, e.g. (per TechCrunch).
+- Mark anything not supported by the results as "(inferred)".
+- Do not invent funding figures, dates, or initiatives. If the results are thin or say no search was run, say so plainly and rely on labeled inference.
 - Keep it factual and concise. This will be used as background for the briefing."""
 
 
