@@ -26,7 +26,7 @@ This tool solves that. Give it a company name and a title, and it returns a brie
 | **Account** | What the company does, who they serve, and their current situation |
 | **Persona** | What this role owns, cares about day-to-day, and is measured on |
 | **Likely Priorities** | What this person is probably focused on right now |
-| **Potential Pain Points** | 3 to 5 role-specific problems, each with a commercial why-it-matters line |
+| **Potential Pain Points** | 3 to 5 role-specific problems, each with why it matters commercially and a signal to listen for in the call |
 | **Discovery Questions** | 5 open-ended questions tailored to this persona |
 | **Sample Outreach** | A cold email or LinkedIn message under 100 words |
 | **Assumptions and Gaps** | What is uncertain and should be verified before the call |
@@ -35,26 +35,29 @@ This tool solves that. Give it a company name and a title, and it returns a brie
 
 ## Example output
 
-The following is excerpted from a real briefing generated for a VP of Sales at Capital One. [See the full output here](output/example_briefing.md), including the Agent Review Notes at the end.
+The following is excerpted from a real briefing generated for a VP of Operations at Acme Logistics. [See the full output here](output/example_briefing.md), including the Agent Review Notes at the end.
 
 ---
 
 ### Persona
-This VP likely owns revenue or portfolio targets across a distributed team of AEs or relationship managers, with day-to-day focus on pipeline health, forecast accuracy, and whether their reps are showing up to customer conversations ready to have the right discussion. They are measured on quota attainment and team productivity, which means rep ramp time and call quality inconsistency are personal problems, not abstract ones.
+The VP of Operations at a mid-market 3PL in last-mile expansion mode is likely accountable for on-time delivery rates, cost per shipment, and carrier or driver utilization across a business that was not originally built for final-mile work. Day-to-day, they are probably managing the friction of running an unfamiliar service line with tools, staff, and processes designed for a different operating model. They are measured on margin and service reliability, and right now both are likely under pressure from the expansion.
 
 ### Potential Pain Points
-- **Inconsistent call preparation across the team.** When reps do their own research differently, some show up sharp and some show up generic, and the VP has no lever to fix that at scale without a process change.
-- **Managers spending coaching time on basics instead of strategy.** If frontline managers are reviewing decks and coaching reps on who the buyer is, they are not spending time on deal strategy or skill development where it actually matters.
+Each pain point comes with why it matters commercially and a concrete signal to listen for in the call:
+
+**Pain:** The operations team is routing last-mile deliveries manually or with tools that were not built for high-stop, time-sensitive final-mile work.
+**Why it matters:** Manual routing at scale drives up fuel spend, increases missed delivery windows, and puts the VP in a position of defending preventable service failures to shippers.
+**Signal to listen for:** "We're still figuring out the routing side" or any mention of dispatchers making judgment calls on the fly.
 
 ### Discovery Questions
-1. When you think about your top-performing reps versus the rest of the team, what do you see them doing differently in how they prepare for a first call?
-2. How are your AEs currently researching prospects before discovery calls, and how much time are they typically spending on that?
-3. When a deal stalls after the first call, what do you usually trace it back to in your deal reviews?
+1. Walk me through what actually happens from the moment a last-mile order hits your system to when a driver leaves the building. Where does your team spend the most time in that process?
+2. When a delivery goes wrong, how does your team find out, and what does it take to get in front of it before the shipper calls you?
+3. If I asked you right now what your average cost per stop was last month, what would you tell me, and how confident are you in that number?
 
 ### Agent Review Notes
 *This section is generated automatically by the self-check step.*
 
-Pain point "High prep time per call" cites a 45-minute figure presented as fact — label as assumption or benchmark, not Capital One-specific data. Discovery questions 1 and 3 can be answered with a short closed response — reframe to "walk me through" to force a real answer. The brief is otherwise strong, especially the Assumptions and Gaps section.
+Pain point 5 (carrier accountability without control) is slightly generic — it applies to any outsourced logistics operation; tie it explicitly to Acme's confirmed partner carrier network. The "possible" tech-stack consolidation priority is labeled correctly but reads like filler; anchor it to the 2020 Magaya selection or cut it. **Final test:** a senior rep could walk into this call without rewriting it — the one section to tighten first is the pain points.
 
 ---
 
@@ -234,12 +237,12 @@ The agent runs five steps per briefing, each a separate call to Claude (plus the
 | **2. Context** | Researches the company with live web search (recent news, funding, leadership) and organizes what it finds |
 | **3. Brief** | Generates the full seven-section briefing, informed by steps 1 and 2 |
 | **4. Refine** | Second pass that tightens the Sample Outreach and pressure-tests the Discovery Questions, then splices the improved sections back in |
-| **5. Review** | Reads the refined brief and flags any weak spots that remain: generic claims, bad questions, unlabeled assumptions |
+| **5. Review** | Reads the refined brief and flags weak spots — generic claims, weak questions, mislabeled confidence — then applies a final test: would a senior rep use this as-is, or rewrite it before the call? |
 
 When you run the terminal version you see each step as it happens:
 
 ```
-Preparing briefing for VP of Sales at Capital One...
+Preparing briefing for VP of Operations at Acme Logistics...
 
   Planning approach...
   Researching company (live web search)...
@@ -247,12 +250,12 @@ Preparing briefing for VP of Sales at Capital One...
   Refining outreach and questions...
   Running self-check...
 
-Done. Briefing saved to: output/capital_one_20260525_1428.md
+Done. Briefing saved to: output/acme_logistics_20260529_1607.md
 ```
 
 Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py` and can be edited without touching any other step. A single system prompt applies to all five calls and sets the agent's role and rules.
 
-`gather_context()` in `agent.py` is where live research happens. It runs a few targeted [Tavily](https://tavily.com) web searches (news/earnings, leadership, and product/strategy — see the `_SEARCH_QUERIES` list and `search.py`), trims the results, and passes them to Claude as context. Claude then writes a sourced summary that feeds straight into the briefing step. Doing the search ourselves (rather than via Claude's server-side tool) keeps token usage low: only the trimmed result snippets enter the prompt, not whole web pages. The prompt instructs Claude to lead with what the results support, name sources inline, and label anything else as inferred. The search provider is isolated in `search.py`, so swapping Tavily for another engine later only touches that one file.
+`gather_context()` in `agent.py` is where live research happens. It runs a few targeted [Tavily](https://tavily.com) web searches (news/earnings, leadership, and product/strategy — see the `_SEARCH_QUERIES` list and `search.py`), trims the results, and passes them to Claude as context. Claude then writes a sourced summary that feeds straight into the briefing step. Doing the search ourselves (rather than via Claude's server-side tool) keeps token usage low: only the trimmed result snippets enter the prompt, not whole web pages. The prompt instructs Claude to lead with what the results support, name sources inline (and treat those cited facts as confirmed), and label everything else as likely or possible. The search provider is isolated in `search.py`, so swapping Tavily for another engine later only touches that one file.
 
 ---
 
@@ -319,7 +322,7 @@ What makes this an agent rather than a script: each step uses the output of the 
 Three specific decisions worth noting:
 
 - **Prompts are separated by step, not bundled.** Changing the tone of the planning step does not affect the briefing format. Adding a new output section does not touch the system rules. Each layer can be changed independently.
-- **Uncertainty is a first-class output.** The agent is instructed to label inferences as assumptions and surface everything it does not know in a dedicated section. A briefing that presents guesses as facts is worse than no briefing.
+- **Uncertainty is a first-class output.** Every claim is tagged on a three-tier confidence scale — confirmed (from search results), likely (a reasonable inference from company size, industry, or role), or possible (speculative but worth exploring) — and everything still unknown is collected in a dedicated Assumptions and Gaps section. A briefing that presents guesses as facts is worse than no briefing.
 - **One engine, two front ends.** The terminal and website versions share a single `agent.py`. The interface is separate from the logic, so a fix lands in both places at once.
 
 ---

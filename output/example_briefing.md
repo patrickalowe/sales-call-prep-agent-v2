@@ -1,75 +1,109 @@
 # Sales Call Brief
 
-**Company:** Capital One  
-**Persona:** VP of Sales  
-**Generated:** 2026-05-25 14:28
+**Company:** Acme Logistics
+**Persona:** VP of Operations
+**Generated:** 2026-05-29 16:07
 
 ---
 
 ## Account
-Capital One is one of the largest U.S. banks, operating across consumer credit cards, commercial banking, small business lending, and B2B partnerships. The company is unusually tech-forward for financial services, building much of its own internal tooling and running engineering at scale. Any vendor conversation here will face a higher bar on build-vs-buy than at a traditional bank.
+
+Acme Logistics (likely operating as Acme Distribution, confirmed via acmedistribution.com) is a Midwest-based 3PL that has historically focused on warehousing and distribution. They recently expanded into last-mile delivery (confirmed per rep notes) and have previously adopted third-party supply chain software, specifically Magaya Supply Chain, to support operational growth (confirmed, though the 2020 selection means their current stack may have changed). They appear to be in active expansion mode, including a national truckload service through a partner carrier network (confirmed via Supply Chain Brain), which suggests deliberate moves toward broader service coverage rather than organic drift.
+
+---
 
 ## Persona
-This VP likely owns revenue or portfolio targets across a distributed team of AEs or relationship managers, with day-to-day focus on pipeline health, forecast accuracy, and whether their reps are showing up to customer conversations ready to have the right discussion. They are measured on quota attainment and team productivity, which means rep ramp time and call quality inconsistency are personal problems, not abstract ones. (Assumption) The specific segment they lead is unknown, which affects how complex and relationship-driven their sales motion actually is.
+
+The VP of Operations at a mid-market 3PL in last-mile expansion mode is likely accountable for on-time delivery rates, cost per shipment, and carrier or driver utilization across a business that was not originally built for final-mile work. Day-to-day, they are probably managing the friction of running an unfamiliar service line with tools, staff, and processes designed for a different operating model. They are measured on margin and service reliability, and right now, both are likely under pressure from the expansion.
+
+---
 
 ## Likely Priorities
-- Reducing the productivity gap between top-performing reps and the rest of the team, especially if there has been recent turnover or headcount pressure. (Assumption)
-- Improving discovery call quality across the team without adding more manager overhead or live call coaching hours.
-- Compressing ramp time for new AEs so they can carry real quota faster. (Assumption)
-- Defending or growing their book against competitors in a cost-conscious environment where headcount growth is unlikely.
+
+- **Likely:** Getting last-mile delivery operations stable and predictable before scaling further, including building repeatable routing and exception-handling processes that do not depend on tribal knowledge.
+- **Likely:** Keeping delivery costs under control as the company enters a service line with higher per-stop variability than their historical freight business.
+- **Likely:** Demonstrating that the last-mile expansion can perform at a level that retains and grows shipper relationships, especially given customer expectations shaped by Amazon-level delivery experiences.
+- **Possible:** Evaluating or consolidating the tech stack to reduce the number of disconnected tools the operations team is managing across warehousing, truckload, and last-mile.
+
+---
 
 ## Potential Pain Points
-**Inconsistent call preparation across the team.** When reps do their own research differently, some show up sharp and some show up generic, and the VP has no lever to fix that at scale without a process change.
 
-**Rep ramp time drags on quota capacity.** New AEs at a company like Capital One have to learn both complex products and a customer base with sophisticated needs. Every week a new rep is not fully productive is direct revenue drag.
+**Pain:** The operations team is routing last-mile deliveries manually or with tools that were not built for high-stop, time-sensitive final-mile work.
+**Why it matters:** Manual routing at scale drives up fuel spend, increases missed delivery windows, and puts the VP in a position of defending preventable service failures to shippers.
+**Signal to listen for:** "We're still figuring out the routing side" or any mention of dispatchers making judgment calls on the fly.
 
-**Managers spending coaching time on basics instead of strategy.** If frontline managers are still reviewing decks and coaching reps on who the buyer is and what they care about, they are not spending time on deal strategy or skills development where it actually matters.
+---
 
-**Call quality is hard to inspect until it is too late.** A VP rarely sees a bad discovery call until it shows up as a stalled deal in the pipeline. By then the damage is done and the feedback loop back to the rep is delayed and low-impact.
+**Pain:** The existing tech stack (likely centered on Magaya or a similar warehouse-first platform) was not designed with last-mile routing or real-time delivery visibility in mind.
+**Why it matters:** Running last-mile on a platform built for warehousing creates blind spots in delivery status, which directly affects the VP's ability to manage exceptions before they become complaints.
+**Signal to listen for:** Any mention of customers calling in for delivery updates, or the team using a separate spreadsheet or app for final-mile tracking.
 
-**High prep time per call reduces rep throughput.** If AEs are spending 45 minutes manually researching each prospect before a discovery call, that time is not being spent on outreach or follow-up. At scale across a large team, this is a significant capacity leak.
+---
+
+**Pain:** The VP is managing last-mile operations with a team that has deep freight and warehousing experience but limited final-mile expertise.
+**Why it matters:** Staffing gaps in an unfamiliar service line mean the VP carries more operational risk personally, and mistakes in last-mile are highly visible to shippers in a way that back-of-house warehouse errors are not.
+**Signal to listen for:** Comments about the team being stretched, or needing to hire before they can grow the last-mile book of business.
+
+---
+
+**Pain:** Without route optimization, the company may be underestimating the true cost per delivery on the last-mile side, making it difficult to price the service competitively and still protect margin.
+**Why it matters:** If the VP cannot demonstrate last-mile margin health, the expansion looks like a cost center rather than a growth engine, which is a tough position in a mid-market 3PL where every service line has to pull its weight.
+**Signal to listen for:** Uncertainty about cost-per-stop figures, or pricing described as "roughly what the market is charging."
+
+---
+
+**Pain:** If Acme is using a third-party carrier network for last-mile rather than owned fleet, route optimization and delivery performance visibility may feel out of their control entirely.
+**Why it matters:** The VP still owns the service level commitment to the shipper even when execution is outsourced, which creates accountability without control and is one of the most frustrating operational positions to be in.
+**Signal to listen for:** "We rely on our carriers to handle that" when asked about delivery windows or on-time performance.
+
+---
 
 ## Discovery Questions
-1. When you think about your top-performing reps versus the rest of the team, what do you see them doing differently in how they prepare for a first call with a prospect?
 
-2. How are your AEs currently researching and preparing for discovery calls, and how much time are they typically spending on that before they get on the phone?
+1. Walk me through what actually happens from the moment a last-mile order hits your system to when a driver leaves the building. Where does your team spend the most time in that process?
 
-3. When a deal stalls or goes quiet after the first call, what do you usually trace it back to in your deal reviews?
+2. When a delivery goes wrong, how does your team find out, and what does it take to get in front of it before the shipper calls you?
 
-4. How are you and your managers currently coaching reps on call preparation, and where does that process break down when you are managing a team at this scale?
+3. If I asked you right now what your average cost per stop was last month, what would you tell me, and how confident are you in that number?
 
-5. If a new AE joined your team today, how long before you would expect them to be running discovery calls that actually move deals forward, and what is the main thing slowing that down?
+4. What did you have to build, buy, or improvise to run last-mile that you did not already have in place from the freight and warehousing side of the business?
+
+5. What would have to change operationally before you felt comfortable doubling the last-mile volume you are running today?
+
+---
 
 ## Sample Outreach
-**Subject: Cutting discovery call prep time for large AE teams**
 
-Hi [Name], sales leaders running large teams at Capital One are under real pressure to keep rep productivity high without adding headcount. One place that leaks quietly is pre-call prep: when every AE researches their own way, you get inconsistent call quality and a lot of hours that could be spent selling. We built a call prep agent that gives AEs a structured briefing before every discovery call in minutes, not 45. Worth a 20-minute conversation to see if it fits what you are working on?
+**Subject:** Last-mile routing at a warehouse-first 3PL
+
+Hi [Name], most routing tools are built for companies that started in last-mile. Standing one up inside an established warehousing and freight operation is a different problem, because the team, the tech stack, and the processes were all designed for something else. We work with mid-market 3PLs navigating exactly that gap. Open to a 20-minute call to compare notes on where the friction usually shows up?
 
 ## Assumptions and Gaps
-- The segment this VP leads is unknown. Whether their AEs sell complex commercial products or work a higher-velocity book changes which pain points to lead with and how to frame the value of structured prep.
-- It is unclear whether Capital One has an existing internal tool that does any version of call prep or account briefing. Given their engineering culture, this is a real possibility and the rep should be ready for it.
-- No information on current sales stack or CRM. If they are on a custom internal system, the CLI format may face friction and integration questions will come up early.
-- It is unknown whether this VP has budget authority for external tools or whether procurement and legal involvement is heavy at the stage of even an initial conversation.
-- Headcount situation is unconfirmed. If this team has been cut recently, the productivity angle will land harder. If they are in a growth phase, the ramp time angle is more relevant.
-- Data security and compliance questions are almost certain to come up. The rep should know in advance what data the agent accesses, how prompts are handled, and whether anything is stored before that question surfaces.
+
+- **Fleet model is unknown.** Whether Acme runs owned delivery vehicles or relies on a carrier network for last-mile changes the relevance of route optimization significantly. Confirm early.
+- **Last-mile expansion timeline and scale are unconfirmed.** The rep notes say they recently expanded, but "recently" could mean six months or two years. The stage of maturity changes the pitch angle.
+- **Current tech stack is uncertain.** The Magaya selection was confirmed in 2020, but it is unknown whether that platform is still in use, whether a TMS has been added, and whether any routing tools are already in place.
+- **Delivery volume and fleet size are unknown.** Without this, it is hard to size the problem or the opportunity.
+- **It is unconfirmed whether the VP of Operations is the right contact.** The Director of Operations named in the research (Kush Narula) may be the more relevant day-to-day owner, depending on how responsibilities are divided. Worth clarifying before the call.
+- **The trigger for the last-mile expansion is unknown.** Whether it was a customer request, a competitive move, or a leadership initiative affects how the VP frames success and who the internal stakeholders are.
 
 ---
 
 ## Agent Review Notes
 
-**Pain Points: "High prep time per call reduces rep throughput"**
-The 45-minute figure is presented as fact. Label it as an assumption or benchmark, not Capital One-specific data.
+## Brief Review
 
-**Pain Points: "Call quality is hard to inspect until it is too late"**
-This applies to almost any B2B sales org. Tie it to Capital One's scale or engineering culture to earn its place here.
+**Pain point 5 (carrier accountability without control)** is slightly generic. It applies to any outsourced logistics operation. Tie it explicitly to Acme's partner carrier network confirmed via Supply Chain Brain.
 
-**Discovery Questions: Questions 1 and 3**
-Both can be answered with a short, closed response that kills momentum. Reframe them to ask "how" or "walk me through" to force a real answer.
+**Discovery question 4** risks a yes/no answer if the prospect reads it defensively. Reframe as: "What was the hardest gap to close when you moved into last-mile?"
 
-**Priorities: "Defending or growing their book against competitors"**
-Too generic. Every sales leader faces this. Either connect it to something Capital One-specific (credit card market pressure, fintech competition) or cut it.
+**"Possible" tech stack consolidation priority** is labeled correctly but reads like filler. Cut it or anchor it to the 2020 Magaya selection as the specific reason to suspect fragmentation.
 
-**Outreach: "sales leaders running large teams at Capital One"**
-The opening implies peer benchmarking without any actual data to support it. Remove or replace with something verifiable.
+**Sample outreach subject line** is descriptive but passive. Test a version that names the friction directly, something like "Routing inside a warehouse-first 3PL."
 
-The brief is otherwise strong, especially the assumptions section.
+---
+
+Everything else holds up. A senior rep could walk into this call without rewriting it.
+
+**If forced to flag one section:** the pain points. Number five needs tightening before it earns its place.
