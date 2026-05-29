@@ -226,14 +226,15 @@ Then run `python3 main.py` (terminal) or `python3 app.py` (website).
 
 ## How it works
 
-The agent runs four steps per briefing, each a separate call to Claude:
+The agent runs five steps per briefing, each a separate call to Claude (plus the Tavily search in step 2):
 
 | Step | What it does |
 |---|---|
 | **1. Plan** | Decides the angle to take before generating anything |
 | **2. Context** | Researches the company with live web search (recent news, funding, leadership) and organizes what it finds |
 | **3. Brief** | Generates the full seven-section briefing, informed by steps 1 and 2 |
-| **4. Review** | Reads its own output and flags weak spots: generic claims, bad questions, unlabeled assumptions |
+| **4. Refine** | Second pass that tightens the Sample Outreach and pressure-tests the Discovery Questions, then splices the improved sections back in |
+| **5. Review** | Reads the refined brief and flags any weak spots that remain: generic claims, bad questions, unlabeled assumptions |
 
 When you run the terminal version you see each step as it happens:
 
@@ -243,12 +244,13 @@ Preparing briefing for VP of Sales at Capital One...
   Planning approach...
   Researching company (live web search)...
   Generating briefing...
+  Refining outreach and questions...
   Running self-check...
 
 Done. Briefing saved to: output/capital_one_20260525_1428.md
 ```
 
-Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py` and can be edited without touching any other step. A single system prompt applies to all four calls and sets the agent's role and rules.
+Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py` and can be edited without touching any other step. A single system prompt applies to all five calls and sets the agent's role and rules.
 
 `gather_context()` in `agent.py` is where live research happens. It runs a few targeted [Tavily](https://tavily.com) web searches (news/earnings, leadership, and product/strategy — see the `_SEARCH_QUERIES` list and `search.py`), trims the results, and passes them to Claude as context. Claude then writes a sourced summary that feeds straight into the briefing step. Doing the search ourselves (rather than via Claude's server-side tool) keeps token usage low: only the trimmed result snippets enter the prompt, not whole web pages. The prompt instructs Claude to lead with what the results support, name sources inline, and label anything else as inferred. The search provider is isolated in `search.py`, so swapping Tavily for another engine later only touches that one file.
 
@@ -306,7 +308,7 @@ Both `main.py` and `app.py` import the same `agent.py`. Improve a prompt or a st
 - Surface the specific prospect's public background and recent news (the legitimate, search-based version of a LinkedIn lookup)
 - Batch mode: accept a CSV of accounts, output a folder of briefings
 - CRM push: write briefings directly into HubSpot or Salesforce as contact notes
-- A second-pass step that tightens the outreach draft and pressure-tests the discovery questions
+- ~~A second-pass step that tightens the outreach draft and pressure-tests the discovery questions~~ — **done** (step 4, Refine)
 
 ---
 

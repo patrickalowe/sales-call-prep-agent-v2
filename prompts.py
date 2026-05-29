@@ -2,12 +2,13 @@
 Prompts for the Sales Call Prep Agent.
 
 One prompt per agent step:
-  PLANNING_PROMPT  -- step 1: decide the angle before generating
-  CONTEXT_PROMPT   -- step 2: organize what is known about the company
-  BRIEFING_PROMPT  -- step 3: generate the full seven-section brief
-  REVIEW_PROMPT    -- step 4: flag weak spots in the output
+  PLANNING_PROMPT    -- step 1: decide the angle before generating
+  CONTEXT_PROMPT     -- step 2: organize what is known about the company
+  BRIEFING_PROMPT    -- step 3: generate the full seven-section brief
+  REFINEMENT_PROMPT  -- step 4: tighten the outreach and discovery questions
+  REVIEW_PROMPT      -- step 5: flag any weak spots that remain
 
-SYSTEM_PROMPT applies to all four steps.
+SYSTEM_PROMPT applies to all five steps.
 
 To tune the agent's tone or rules, edit SYSTEM_PROMPT.
 To adjust what any step produces, edit that step's prompt.
@@ -114,6 +115,26 @@ Under 100 words. Include a subject line. Open tied to the persona's priorities. 
 
 ## Assumptions and Gaps
 Bullet list of what is uncertain or needs verifying before the call."""
+
+
+REFINEMENT_PROMPT = """Improve two sections of this draft sales call brief: the Discovery Questions and the Sample Outreach. Leave every other section untouched and out of your response.
+
+Full brief for context:
+{brief}
+
+Rewrite the two sections to a higher standard:
+
+Discovery Questions: pressure-test all five. Replace any that can be answered with yes or no, that lead the prospect to an answer, that stack two questions into one, or that are generic enough to ask any company. Keep exactly five open-ended questions that invite a real answer and connect to this persona's day-to-day.
+
+Sample Outreach: tighten it. Keep it under 100 words with a specific subject line. The opening must tie to a concrete priority or recent fact from the brief, not generic flattery. End with one clear, low-friction ask. Cut any sentence that could be sent to any company.
+
+Return ONLY these two sections, using these exact headers and nothing else (no preamble, no other sections, no closing commentary):
+
+## Discovery Questions
+...
+
+## Sample Outreach
+..."""
 
 
 REVIEW_PROMPT = """Review this sales call brief and flag anything that would make it less useful in a real call.

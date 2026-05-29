@@ -1,13 +1,14 @@
 """
 Core agent logic for the Sales Call Prep Agent.
 
-Runs a four-step workflow per briefing:
+Runs a five-step workflow per briefing:
   1. plan_approach  -- decide the angle before generating
-  2. gather_context -- organize what is known about the company
+  2. gather_context -- research the company (live Tavily search)
   3. generate_brief -- produce the full seven-section briefing
-  4. review_brief   -- flag weak spots in the output
+  4. refine_brief   -- tighten the outreach and pressure-test the questions
+  5. review_brief   -- flag any weak spots that remain
 
-run_agent() is the main entry point. It runs all four steps and returns
+run_agent() is the main entry point. It runs all five steps and returns
 a formatted markdown string ready to save.
 
 Each step is a separate function so they can be read, tested, or swapped
@@ -30,6 +31,7 @@ from prompts import (
     PLANNING_PROMPT,
     CONTEXT_PROMPT,
     BRIEFING_PROMPT,
+    REFINEMENT_PROMPT,
     REVIEW_PROMPT,
 )
 from search import search_web
@@ -180,8 +182,43 @@ def generate_brief(client, company_name, persona_title, notes, plan, context, us
     return _call(client, prompt, max_tokens=2000, usage=usage)
 
 
+def _splice_refined(brief, refined):
+    """Replace the Discovery Questions + Sample Outreach block with the refined
+    version. Those two sections are adjacent in the brief (Discovery Questions
+    is followed by Sample Outreach, then Assumptions and Gaps), so this is a
+    single splice. Falls back to the original brief if the expected headers are
+    not found, so a formatting surprise can never blank out the brief.
+    """
+    start = brief.find("## Discovery Questions")
+    end = brief.find("## Assumptions and Gaps")
+    if start == -1 or end == -1 or end <= start:
+        return brief
+
+    refined = refined.strip()
+    # Keep only from the first refined header, and drop anything the model may
+    # have added past the two sections we asked for.
+    ds = refined.find("## Discovery Questions")
+    if ds != -1:
+        refined = refined[ds:]
+    stray = refined.find("## Assumptions")
+    if stray != -1:
+        refined = refined[:stray].strip()
+
+    return brief[:start] + refined + "\n\n" + brief[end:]
+
+
+def refine_brief(client, brief, usage=None):
+    """Step 4: Second pass that tightens the Sample Outreach and pressure-tests
+    the Discovery Questions, then splices the improved sections back into the
+    brief. Returns the refined brief.
+    """
+    prompt = REFINEMENT_PROMPT.format(brief=brief)
+    refined = _call(client, prompt, max_tokens=800, usage=usage)
+    return _splice_refined(brief, refined)
+
+
 def review_brief(client, brief, usage=None):
-    """Step 4: Flag weak spots in the generated output."""
+    """Step 5: Flag any weak spots that remain in the refined brief."""
     prompt = REVIEW_PROMPT.format(brief=brief)
     return _call(client, prompt, max_tokens=400, usage=usage)
 
@@ -253,6 +290,9 @@ def run_agent(company_name, persona_title, notes="", on_step=None, use_search=Tr
 
     step("Generating briefing...")
     brief = generate_brief(client, company_name, persona_title, notes, plan, context, usage=usage)
+
+    step("Refining outreach and questions...")
+    brief = refine_brief(client, brief, usage=usage)
 
     step("Running self-check...")
     review = review_brief(client, brief, usage=usage)
