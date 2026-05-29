@@ -243,7 +243,7 @@ Done. Briefing saved to: output/capital_one_20260525_1428.md
 
 Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py` and can be edited without touching any other step. A single system prompt applies to all four calls and sets the agent's role and rules.
 
-`gather_context()` in `agent.py` is where live research happens. It runs one [Tavily](https://tavily.com) web search (see `search.py`), trims the results, and passes them to Claude as context. Claude then writes a sourced summary that feeds straight into the briefing step. Doing the search ourselves (rather than via Claude's server-side tool) keeps token usage low: only the trimmed result snippets enter the prompt, not whole web pages. The prompt instructs Claude to lead with what the results support, name sources inline, and label anything else as inferred. The search provider is isolated in `search.py`, so swapping Tavily for another engine later only touches that one file.
+`gather_context()` in `agent.py` is where live research happens. It runs a few targeted [Tavily](https://tavily.com) web searches (news/earnings, leadership, and product/strategy — see the `_SEARCH_QUERIES` list and `search.py`), trims the results, and passes them to Claude as context. Claude then writes a sourced summary that feeds straight into the briefing step. Doing the search ourselves (rather than via Claude's server-side tool) keeps token usage low: only the trimmed result snippets enter the prompt, not whole web pages. The prompt instructs Claude to lead with what the results support, name sources inline, and label anything else as inferred. The search provider is isolated in `search.py`, so swapping Tavily for another engine later only touches that one file.
 
 ---
 
@@ -286,7 +286,7 @@ Both `main.py` and `app.py` import the same `agent.py`. Improve a prompt or a st
 ## Limitations
 
 - **Search quality varies by account.** The Tavily search finds far more on well-covered public companies than on small or stealthy ones. When results are thin, the brief falls back to clearly labeled inference rather than inventing facts.
-- **One search per briefing.** The context step runs a single Tavily query (one Tavily credit, free-tier friendly). Because only trimmed result snippets enter the prompt, a full run stays cheap — about $0.04 in Claude tokens and under a minute. Every run prints its estimated cost; `--no-search` skips Tavily entirely for an offline-style test run.
+- **A few searches per briefing.** The context step runs three targeted Tavily queries (three Tavily credits, free-tier friendly). Because only trimmed result snippets enter the prompt, a full run stays cheap — a handful of cents in Claude tokens. The number of searches is the `_SEARCH_QUERIES` list in `agent.py`, easy to dial up or down. Every run prints its estimated cost; `--no-search` skips Tavily entirely for an offline-style test run.
 - **One briefing per run.** Batch mode is not yet implemented.
 - **Output quality scales with input quality.** A company name alone produces a more generic briefing than one with specific rep notes.
 - **No CRM integration.** Briefings save as local markdown files.

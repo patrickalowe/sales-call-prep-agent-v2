@@ -36,6 +36,19 @@ from search import search_web
 
 MODEL = "claude-sonnet-4-6"
 
+# Targeted web searches run per briefing. Each line is one Tavily search; their
+# results are combined and handed to Claude. Add or remove lines to change how
+# many searches run. {company} is filled in at run time.
+_SEARCH_QUERIES = [
+    "{company} recent news, earnings, and funding",
+    "{company} leadership team and executives",
+    "{company} product launches and strategy",
+]
+
+# Results to keep per search. With several searches, a smaller number per search
+# keeps the combined context (and the Claude input cost) modest.
+_RESULTS_PER_SEARCH = 3
+
 # Sonnet 4.6 pricing so each run can report its own estimated Claude cost,
 # in dollars per token. (Tavily search is billed separately in Tavily credits,
 # not here; we report the search count instead.)
@@ -135,10 +148,14 @@ def gather_context(client, company_name, persona_title, plan, use_search=True, u
     from training knowledge only, which is faster and cheaper for test runs.
     """
     if use_search:
-        query = f"{company_name} company recent news, funding, leadership, and strategy"
-        search_results = search_web(query)
-        if usage is not None:
-            usage["searches"] += 1
+        blocks = []
+        for template in _SEARCH_QUERIES:
+            query = template.format(company=company_name)
+            results = search_web(query, max_results=_RESULTS_PER_SEARCH)
+            blocks.append(f"Search ({query}):\n{results}")
+            if usage is not None:
+                usage["searches"] += 1
+        search_results = "\n\n".join(blocks)
     else:
         search_results = "No web search was run for this briefing."
 
