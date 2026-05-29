@@ -79,7 +79,7 @@ Press **Command + Space**, type **Terminal**, and hit Enter. A black or white wi
 Copy and paste this command, then hit Enter:
 
 ```bash
-git clone https://github.com/patrickalowe/sales-call-prep-agent.git ~/Projects/sales-call-prep
+git clone https://github.com/patrickalowe/sales-call-prep-agent-v2.git ~/Projects/sales-call-prep-agent-v2
 ```
 
 This saves the project to a `Projects` folder in your home directory.
@@ -89,7 +89,7 @@ This saves the project to a `Projects` folder in your home directory.
 ### Step 3 — Navigate into the project folder
 
 ```bash
-cd ~/Projects/sales-call-prep
+cd ~/Projects/sales-call-prep-agent-v2
 ```
 
 > **Important:** You must run this command every time you open a new Terminal window before doing anything else. Think of it as "opening the project folder" — all other commands only work from inside it.
@@ -197,7 +197,7 @@ Use the arrow keys to scroll. Press `q` to exit. Replace `filename.md` with the 
 Open Terminal and run these two lines before anything else:
 
 ```bash
-cd ~/Projects/sales-call-prep
+cd ~/Projects/sales-call-prep-agent-v2
 source venv/bin/activate
 ```
 
@@ -209,8 +209,8 @@ Then run `python3 main.py` (terminal) or `python3 app.py` (website).
 
 | What you see | What to do |
 |---|---|
-| `no such file or directory: sales-call-prep` | You skipped Step 3. Run `cd ~/Projects/sales-call-prep` |
-| `can't open file 'main.py'` | You are not in the project folder. Run `cd ~/Projects/sales-call-prep` |
+| `no such file or directory: sales-call-prep-agent-v2` | You skipped Step 3. Run `cd ~/Projects/sales-call-prep-agent-v2` |
+| `can't open file 'main.py'` | You are not in the project folder. Run `cd ~/Projects/sales-call-prep-agent-v2` |
 | `No module named 'dotenv'` or `No module named 'flask'` | Run `source venv/bin/activate` then `pip install -r requirements.txt` |
 | `AuthenticationError` | Your API key is missing or incorrect. Check your `.env` file |
 | `Address already in use` (website) | The website is already running in another Terminal window. Close it, or stop it with `Control + C` |
@@ -265,7 +265,7 @@ Both launchers share a single engine. No databases.
 ## File structure
 
 ```
-sales-call-prep/
+sales-call-prep-agent-v2/
 ├── agent.py             # Shared engine: calls the Claude API, returns markdown
 ├── prompts.py           # One prompt per agent step plus a shared system prompt
 ├── search.py            # Tavily web-search wrapper (the only search-provider code)

@@ -32,15 +32,20 @@ python3 main.py     # terminal version
 python3 app.py      # website version (then open http://localhost:5001)
 
 
-=== SAVING CREDITS WHILE TESTING ===
+=== COST (every run prints its own) ===
 
-Live web search is the expensive part. To test the tool WITHOUT it
-(cheaper, faster, uses training data only), add --no-search:
+A normal run does 3 Tavily searches, then Claude writes the brief.
+Tavily searches are free-tier (3 credits); you only really pay Claude
+tokens, which is a few cents. Each run prints a line like:
+
+  Usage: 5,434 in + 2,072 out tokens -> est. $0.047 (Claude) + 3 Tavily search(es)
+
+So a full searched run is about $0.05 and finishes in ~1 minute.
+
+To skip the web search entirely (no Tavily key needed, training data
+only), add --no-search:
 
   python3 main.py --no-search
 
-Every run now prints its cost at the end, e.g.:
-  Usage: 4,690 in + 2,554 out tokens, 0 search(es) -> est. $0.052
-
-A no-search run is about $0.05. A run WITH search costs more (it pulls
-web pages into the prompt) and is now capped at 1 search to keep it down.
+To change how many searches run, edit the _SEARCH_QUERIES list near the
+top of agent.py (one line = one search).
