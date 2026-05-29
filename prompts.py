@@ -59,10 +59,12 @@ Persona: {persona_title}
 Rep notes: {notes}
 
 In 4 to 6 bullet points, outline:
-- The most important angle for this specific persona at this company
+- What the persona is most likely to care about in the first five minutes of the call
 - What the rep most needs to know going into this call
 - Any gaps in the available information that will affect the brief
 - What to focus on to make the output genuinely useful rather than generic
+
+Identify ONE angle that is unique to this persona at this specific company, not something that would apply to any contact in this industry. If you cannot identify one based on the input, flag it explicitly as a gap.
 
 Be brief and direct. This is a planning note, not a document."""
 
