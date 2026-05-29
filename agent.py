@@ -11,7 +11,9 @@ run_agent() is the main entry point. It runs all four steps and returns
 a formatted markdown string ready to save.
 
 Each step is a separate function so they can be read, tested, or swapped
-out independently. To add live web search, extend gather_context().
+out independently. The gather_context() step uses live web search so the
+briefing is grounded in current, sourced information rather than the model's
+training knowledge alone.
 """
 
 from datetime import datetime
@@ -29,16 +31,47 @@ from prompts import (
 
 MODEL = "claude-sonnet-4-6"
 
+# Anthropic's server-side web search tool. Claude runs the searches on
+# Anthropic's infrastructure and folds the results (with sources) back into
+# its answer. max_uses caps how many searches one briefing can trigger, which
+# bounds both latency and cost.
+WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search", "max_uses": 5}
 
-def _call(client, prompt, max_tokens):
-    """Make a single API call and return the text response."""
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=max_tokens,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return response.content[0].text.strip()
+# Safety cap on the server-side tool loop, so a runaway search session can't
+# spin forever. Each pause_turn is one resume.
+_MAX_SEARCH_RESUMES = 8
+
+
+def _call(client, prompt, max_tokens, tools=None):
+    """Make an API call and return the combined text response.
+
+    When `tools` includes the web search tool, Claude may pause mid-turn to run
+    searches (stop_reason == "pause_turn"); we resume until it finishes. The
+    response can contain several blocks (search calls, results, text), so we
+    join every text block rather than reading only the first.
+    """
+    messages = [{"role": "user", "content": prompt}]
+
+    for _ in range(_MAX_SEARCH_RESUMES + 1):
+        kwargs = {
+            "model": MODEL,
+            "max_tokens": max_tokens,
+            "system": SYSTEM_PROMPT,
+            "messages": messages,
+        }
+        if tools:
+            kwargs["tools"] = tools
+
+        response = client.messages.create(**kwargs)
+
+        if response.stop_reason == "pause_turn":
+            # Server-side search loop hit its iteration limit. Append what we
+            # have and re-send; the API resumes the search automatically.
+            messages.append({"role": "assistant", "content": response.content})
+            continue
+        break
+
+    return "".join(b.text for b in response.content if b.type == "text").strip()
 
 
 def plan_approach(client, company_name, persona_title, notes):
@@ -52,13 +85,17 @@ def plan_approach(client, company_name, persona_title, notes):
 
 
 def gather_context(client, company_name, persona_title, plan):
-    """Step 2: Organize what is known about the company and persona."""
+    """Step 2: Research the company and persona using live web search.
+
+    This is the step that grounds the brief in current reality (recent news,
+    funding, leadership, product launches) instead of stale training data.
+    """
     prompt = CONTEXT_PROMPT.format(
         company_name=company_name,
         persona_title=persona_title,
         plan=plan,
     )
-    return _call(client, prompt, max_tokens=600)
+    return _call(client, prompt, max_tokens=2000, tools=[WEB_SEARCH_TOOL])
 
 
 def generate_brief(client, company_name, persona_title, notes, plan, context):
@@ -131,7 +168,7 @@ def run_agent(company_name, persona_title, notes="", on_step=None):
     step("Planning approach...")
     plan = plan_approach(client, company_name, persona_title, notes)
 
-    step("Gathering context...")
+    step("Researching company (live web search)...")
     context = gather_context(client, company_name, persona_title, plan)
 
     step("Generating briefing...")

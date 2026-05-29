@@ -1,6 +1,6 @@
 # Sales Call Prep Agent
 
-A Python tool that turns a company name, a prospect's job title, and a few optional notes into a structured pre-call briefing. Runs in under 30 seconds. Use it two ways: a terminal version that saves the brief as a timestamped markdown file, or a local website with a simple form.
+A Python tool that turns a company name, a prospect's job title, and a few optional notes into a structured pre-call briefing. It researches the account with live web search, so the brief reflects current news and not just the model's training data. Use it two ways: a terminal version that saves the brief as a timestamped markdown file, or a local website with a simple form.
 
 ---
 
@@ -221,7 +221,7 @@ The agent runs four steps per briefing, each a separate call to Claude:
 | Step | What it does |
 |---|---|
 | **1. Plan** | Decides the angle to take before generating anything |
-| **2. Context** | Organizes what is known about the company and persona |
+| **2. Context** | Researches the company with live web search (recent news, funding, leadership) and organizes what it finds |
 | **3. Brief** | Generates the full seven-section briefing, informed by steps 1 and 2 |
 | **4. Review** | Reads its own output and flags weak spots: generic claims, bad questions, unlabeled assumptions |
 
@@ -231,7 +231,7 @@ When you run the terminal version you see each step as it happens:
 Preparing briefing for VP of Sales at Capital One...
 
   Planning approach...
-  Gathering context...
+  Researching company (live web search)...
   Generating briefing...
   Running self-check...
 
@@ -240,7 +240,7 @@ Done. Briefing saved to: output/capital_one_20260525_1428.md
 
 Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py` and can be edited without touching any other step. A single system prompt applies to all four calls and sets the agent's role and rules.
 
-`gather_context()` in `agent.py` is the intended hook for live web search in v2. Add a search API call there and the results feed directly into the briefing step without changing anything else.
+`gather_context()` in `agent.py` is where live research happens. It calls Claude with Anthropic's server-side web search tool (`web_search_20260209`), capped at five searches per briefing. Claude runs the searches, reads the results, and returns a sourced summary that feeds straight into the briefing step. The prompt instructs it to separate what it verified via search from what it is inferring, and to name sources inline.
 
 ---
 
@@ -251,6 +251,7 @@ Each step is a separate function in `agent.py`. Each prompt lives in `prompts.py
 | Python 3.9+ | Core language |
 | [Anthropic Python SDK](https://github.com/anthropics/anthropic-sdk-python) | Claude API client |
 | Claude Sonnet (`claude-sonnet-4-6`) | Language model |
+| Anthropic web search tool (`web_search_20260209`) | Live, sourced research in the context step |
 | python-dotenv | Loads the API key from `.env` |
 | Flask | Serves the website version |
 
@@ -280,7 +281,8 @@ Both `main.py` and `app.py` import the same `agent.py`. Improve a prompt or a st
 
 ## Limitations
 
-- **No live web search.** The agent draws on Claude's training knowledge plus whatever notes you provide. It does not fetch current news, recent funding rounds, or live job postings. `gather_context()` in `agent.py` is the intended hook for adding this in v2.
+- **Search quality varies by account.** Live web search finds far more on well-covered public companies than on small or stealthy ones. When search returns little, the brief falls back to clearly labeled inference rather than inventing facts.
+- **Slower than v1.** Running live searches adds time to the context step, so a briefing now takes longer than the old training-data-only version. The tradeoff is current, sourced information.
 - **One briefing per run.** Batch mode is not yet implemented.
 - **Output quality scales with input quality.** A company name alone produces a more generic briefing than one with specific rep notes.
 - **No CRM integration.** Briefings save as local markdown files.
@@ -289,8 +291,8 @@ Both `main.py` and `app.py` import the same `agent.py`. Improve a prompt or a st
 
 ## Future improvements
 
-- Connect `gather_context()` to live web search (Anthropic's web search tool, or Tavily/SerpAPI) for current, sourced context
-- Add LinkedIn profile or recent news lookup for the specific prospect
+- ~~Connect `gather_context()` to live web search for current, sourced context~~ — **done in v2** (Anthropic's web search tool)
+- Surface the specific prospect's public background and recent news (the legitimate, search-based version of a LinkedIn lookup)
 - Batch mode: accept a CSV of accounts, output a folder of briefings
 - CRM push: write briefings directly into HubSpot or Salesforce as contact notes
 - A second-pass step that tightens the outreach draft and pressure-tests the discovery questions

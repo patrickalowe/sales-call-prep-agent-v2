@@ -58,19 +58,29 @@ In 4 to 6 bullet points, outline:
 Be brief and direct. This is a planning note, not a document."""
 
 
-CONTEXT_PROMPT = """Organize the known context for this prospect before writing the full brief.
+CONTEXT_PROMPT = """Research this prospect using web search, then organize what you find before the full brief is written.
 
 Company: {company_name}
 Persona: {persona_title}
 Planning notes:
 {plan}
 
-In 2 to 3 short paragraphs, summarize:
-- What is publicly known or reasonably inferred about this company
+Use the web search tool to find current, specific information. Prioritize:
+- Recent news: funding rounds, acquisitions, layoffs, expansions, earnings
+- Leadership changes or who currently holds this role (or roles like it)
+- Recent product launches, strategy shifts, or public initiatives
+- Industry pressures affecting this company right now
+
+Then, in 2 to 3 short paragraphs, summarize:
+- What is currently true about this company (lead with what you found in search)
 - What someone in this role typically owns, cares about, and is measured on
 - Any relevant industry dynamics or pressures that shape this conversation
 
-Label anything uncertain. Keep it factual and concise. This will be used as background for the briefing."""
+Rules:
+- Clearly separate what you VERIFIED via search from what you are INFERRING. Mark inferences with "(inferred)".
+- When a fact comes from search, name the source in parentheses, e.g. (per TechCrunch, March 2026).
+- Do not invent funding figures, dates, or initiatives. If search returns nothing useful, say so plainly and rely on labeled inference.
+- Keep it factual and concise. This will be used as background for the briefing."""
 
 
 BRIEFING_PROMPT = """Generate a sales call brief using the context and planning notes below.
