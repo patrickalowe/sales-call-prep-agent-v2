@@ -69,8 +69,8 @@ Company: {company_name}
 Persona: {persona_title}
 Rep notes: {notes}
 Product being sold: {product_name}
-What the product does: {product_benefits}
-Target use case: {target_use_case}
+What the product does (full capability set): {product_benefits}
+Target use case (the one angle to lead with for this prospect): {target_use_case}
 
 In 3 to 5 bullet points, outline:
 - The single most useful angle for this persona at this company, tied to the product and use case where it fits
@@ -89,7 +89,7 @@ CONTEXT_PROMPT = """Organize the context for this prospect before the full brief
 Sales role being briefed: {sales_role}
 Company: {company_name}
 Persona: {persona_title}
-Target use case: {target_use_case}
+Target use case (the one angle to lead with for this prospect): {target_use_case}
 Planning notes:
 {plan}
 
@@ -98,7 +98,7 @@ Live web search results (from a search engine; may be noisy or partly irrelevant
 
 In 2 short paragraphs, summarize:
 - What is currently true about this company, leading with specifics supported by the search results above
-- Any relevant industry dynamics, competitors, or pressures that shape this conversation, especially anything tied to the target use case
+- Any relevant industry dynamics or competitors, and any incumbent tool or process that likely serves the target use case at this company today
 (Do not generalize about the persona's job here. The briefing step writes the persona section. Keep this focused on the company and its market.)
 
 Rules:
@@ -118,8 +118,8 @@ Company: {company_name}
 Persona: {persona_title}
 Rep notes: {notes}
 Product being sold: {product_name}
-What the product does: {product_benefits}
-Target use case: {target_use_case}
+What the product does (full capability set): {product_benefits}
+Target use case (the one angle to lead with for this prospect): {target_use_case}
 
 Planning notes:
 {plan}
@@ -138,12 +138,13 @@ Start with these three sections for every role:
 2 to 3 sentences (1 to 2 for SDR or BDR) on what this role owns, cares about day-to-day, and is measured on. Role-specific, not a generic job description.
 
 ## Potential Pain Points
-Specific to this persona at this company, never generic to the industry. If a product is specified, bias toward pain points it could plausibly address, without force-fitting or overclaiming.
-- If the role is SDR or BDR: exactly 3, each a single tight sentence.
+Specific to this persona at this company, never generic to the industry. Lead with pains tied to the target use case; treat the rest of the product's benefits as supporting, not equal. Do not force-fit or overclaim.
+- If the role is SDR or BDR: exactly 3, each a single tight sentence that ends with the product capability addressing it in parentheses, or "(product does not solve this)".
 - If the role is AE: 3 to 5, each formatted as:
 **Pain:** [the specific problem]
 **Why it matters:** [the commercial or career consequence for this person]
 **Signal to listen for:** [a phrase or question that would confirm it]
+**Addressed by:** [the specific product capability that solves this, or "product does not solve this"]
 
 Then include the middle sections that match the role.
 
@@ -156,7 +157,7 @@ If the role is SDR or BDR, include exactly these, kept short:
 2 to 3 specific openers tied to something true about this company or person. No flattery, no "I came across your profile."
 
 ## Likely Objections
-2 to 3 objections this persona is likely to raise about a product like {product_name}, each with a one-line honest response grounded in what the product actually does. Do not overclaim.
+2 to 3 objections this persona is likely to raise about a product in this category, including how {product_name} differs from an incumbent tool they may already use (a call-recording or forecasting tool, for example). Give each a one-line honest response grounded in a specific product benefit, not a general claim. Do not overclaim.
 
 If the role is AE, include exactly these:
 
@@ -164,7 +165,7 @@ If the role is AE, include exactly these:
 The likely buying-group roles (economic buyer, champion, blockers, users), what each cares about, and which to prioritize reaching. Label inferred roles likely or possible.
 
 ## Business Case Angle
-3 to 4 sentences: the cost of the status quo for the target use case ({target_use_case}), the outcome {product_name} enables, and how this persona would justify the spend internally. Tie it to what the product actually does. Do not invent numbers.
+3 to 4 sentences: the cost of the status quo for the target use case ({target_use_case}), the outcome {product_name} enables, and how this persona would justify the spend internally. Lead with the target use case; bring in other product benefits only as support. Do not invent numbers.
 
 ## Competitive Read
 1 to 3 bullets on what this account most likely uses or does today instead, and the angle to displace or complement it. Label as likely or possible unless confirmed.
@@ -173,14 +174,14 @@ The likely buying-group roles (economic buyer, champion, blockers, users), what 
 2 to 3 deal risks (no budget, no urgency, competing priority, wrong contact), each with a one-line way to test for it on the call.
 
 ## Recommended Next Step
-One concrete next step to aim for from this call (a scoped follow-up, a stakeholder to add, a working session). Not just "schedule a follow-up."
+One concrete next step that validates the target use case (for example a scoped diagnostic on that exact workflow) or adds a needed stakeholder. Tie it to the use case, not a generic "schedule a follow-up."
 
 Then end with these three sections for every role. Keep these headers verbatim, in this exact order:
 
 ## Discovery Questions
-A first pass at 5 open-ended questions, role-appropriate, with at least one probing the target use case. The refinement step sharpens these, so do not over-polish here.
-- If the role is SDR or BDR, these qualify the account (fit, timing, pain, authority).
-- If the role is AE, these go deep on current state, business impact, decision process, and success criteria.
+A first pass at 5 open-ended questions, role-appropriate. The refinement step sharpens these, so do not over-polish here.
+- If the role is SDR or BDR, these qualify the account (fit, timing, pain, authority); at least one must test fit for the target use case specifically (do they have this problem, at enough scale to care).
+- If the role is AE, these go deep on current state, business impact, decision process, and success criteria; at least one must probe the current state that a major product benefit would improve.
 
 ## Sample Outreach
 A first draft under 100 words with a subject line. The refinement step tightens it, so do not over-polish here.
@@ -195,14 +196,14 @@ REFINEMENT_PROMPT = """Improve two sections of this draft sales call brief: the 
 
 Sales role being briefed: {sales_role}
 Product being sold: {product_name}
-What the product does: {product_benefits}
+What the product does (full capability set): {product_benefits}
 
 Full brief for context:
 {brief}
 
 Rewrite the two sections to a higher standard:
 
-Discovery Questions: pressure-test all five. Replace any that can be answered with yes or no, that lead the prospect to an answer, that stack two questions into one, or that are generic enough to ask any company. Keep exactly five open-ended questions that connect to this persona's day-to-day.
+Discovery Questions: pressure-test all five. Replace any that can be answered with yes or no, that lead the prospect to an answer, that stack two questions into one, or that are generic enough to ask any company. Keep exactly five open-ended questions that connect to this persona's day-to-day, and keep at least one tied to the target use case or a specific product benefit.
 - If the role is SDR or BDR, they must qualify (fit, timing, pain, authority) while still sounding conversational.
 - If the role is AE, they must go deep on current state, business impact, decision process, and success criteria.
 
