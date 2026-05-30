@@ -86,7 +86,7 @@
       margin-left: 0.3rem;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 0.65rem 0.875rem;
       border: 1px solid var(--border);
@@ -98,7 +98,7 @@
       transition: border-color 0.15s, background 0.15s;
     }
 
-    input:focus, textarea:focus {
+    input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--primary);
       background: white;
@@ -290,12 +290,49 @@
         </div>
 
         <div class="form-group">
+          <label for="sales_role">Your sales role <span class="label-hint">shapes the brief</span></label>
+          <select id="sales_role" name="sales_role">
+            <option value="AE">AE (deep discovery, stakeholders, business case)</option>
+            <option value="SDR">SDR / BDR (personalize, qualify, book a meeting)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label for="notes">Context <span class="label-hint">optional but improves output</span></label>
           <textarea
             id="notes"
             name="notes"
-            placeholder="What do you know about this account? What are you selling? Any intel from LinkedIn, a warm intro, or previous conversations?"
+            placeholder="What do you know about this account? Any intel from LinkedIn, a warm intro, or previous conversations?"
           ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="product_name">Product you're selling <span class="label-hint">optional</span></label>
+          <input
+            type="text"
+            id="product_name"
+            name="product_name"
+            placeholder="e.g. Revenue Intelligence Platform"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="product_benefits">What it does <span class="label-hint">optional, helps tie the brief to your product</span></label>
+          <textarea
+            id="product_benefits"
+            name="product_benefits"
+            placeholder="What problems does it solve? e.g. improves forecast accuracy, flags deal risk earlier, coaches reps from call insights."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="target_use_case">Target use case <span class="label-hint">optional</span></label>
+          <input
+            type="text"
+            id="target_use_case"
+            name="target_use_case"
+            placeholder="e.g. forecasting accuracy for a scaling SDR team"
+          />
         </div>
 
         <button type="submit" id="generate-btn">Generate Briefing</button>

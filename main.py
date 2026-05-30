@@ -31,8 +31,15 @@ def get_inputs_interactively():
     print("\n=== Sales Call Prep Agent ===\n")
     company = input("Company name: ").strip()
     persona = input("Prospect role/title: ").strip()
+    sales_role = input("Your sales role [SDR/BDR or AE] (Enter for AE; SDR and BDR give the same brief): ").strip()
     notes = input("Optional notes (press Enter to skip): ").strip()
-    return company, persona, notes
+    product_name = input("Product you're selling (press Enter to skip): ").strip()
+    product_benefits = ""
+    target_use_case = ""
+    if product_name:
+        product_benefits = input("What does it do? (press Enter to skip): ").strip()
+        target_use_case = input("Target use case (press Enter to skip): ").strip()
+    return company, persona, notes, sales_role, product_name, product_benefits, target_use_case
 
 
 def load_inputs_from_file(path):
@@ -46,11 +53,24 @@ def load_inputs_from_file(path):
         print(f"Error: Could not parse {path} as valid JSON.")
         sys.exit(1)
 
-    if "company" not in data or "persona" not in data:
-        print("Error: JSON file must include 'company' and 'persona' fields.")
+    # Accept either the short keys (company/persona) or the longer ones
+    # (company_name/persona_title) so older and newer input files both work.
+    company = data.get("company") or data.get("company_name")
+    persona = data.get("persona") or data.get("persona_title")
+    if not company or not persona:
+        print("Error: JSON file must include 'company' (or 'company_name') "
+              "and 'persona' (or 'persona_title') fields.")
         sys.exit(1)
 
-    return data["company"], data["persona"], data.get("notes", "")
+    return (
+        company,
+        persona,
+        data.get("notes", ""),
+        data.get("sales_role", ""),
+        data.get("product_name", ""),
+        data.get("product_benefits", ""),
+        data.get("target_use_case", ""),
+    )
 
 
 def main():
@@ -60,17 +80,24 @@ def main():
     parser.add_argument("--input", "-i", help="Path to a JSON input file")
     parser.add_argument("--company", help="Company name")
     parser.add_argument("--persona", help="Prospect role or title")
+    parser.add_argument("--sales-role", default="", help="Your sales role: SDR, BDR, or AE (defaults to AE)")
     parser.add_argument("--notes", default="", help="Optional context for the rep")
+    parser.add_argument("--product-name", default="", help="Optional product you are selling")
+    parser.add_argument("--product-benefits", default="", help="Optional summary of what the product does")
+    parser.add_argument("--target-use-case", default="", help="Optional use case the product is being sold for")
     parser.add_argument("--no-search", action="store_true",
                         help="Skip live web search (cheaper and faster; uses training knowledge only)")
     args = parser.parse_args()
 
     if args.input:
-        company, persona, notes = load_inputs_from_file(args.input)
+        company, persona, notes, sales_role, product_name, product_benefits, target_use_case = load_inputs_from_file(args.input)
     elif args.company and args.persona:
         company, persona, notes = args.company, args.persona, args.notes
+        sales_role = args.sales_role
+        product_name, product_benefits = args.product_name, args.product_benefits
+        target_use_case = args.target_use_case
     else:
-        company, persona, notes = get_inputs_interactively()
+        company, persona, notes, sales_role, product_name, product_benefits, target_use_case = get_inputs_interactively()
 
     errors = validate_inputs(company, persona)
     if errors:
@@ -85,6 +112,10 @@ def main():
             company_name=company,
             persona_title=persona,
             notes=notes,
+            sales_role=sales_role,
+            product_name=product_name,
+            product_benefits=product_benefits,
+            target_use_case=target_use_case,
             on_step=lambda msg: print(f"  {msg}"),
             use_search=not args.no_search,
         )

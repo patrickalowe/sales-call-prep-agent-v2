@@ -30,13 +30,25 @@ def index():
 def generate():
     company = request.form.get("company", "").strip()
     persona = request.form.get("persona", "").strip()
+    sales_role = request.form.get("sales_role", "").strip()
     notes = request.form.get("notes", "").strip()
+    product_name = request.form.get("product_name", "").strip()
+    product_benefits = request.form.get("product_benefits", "").strip()
+    target_use_case = request.form.get("target_use_case", "").strip()
 
     if not company or not persona:
         return jsonify({"error": "Company name and prospect role are both required."}), 400
 
     try:
-        result = run_agent(company_name=company, persona_title=persona, notes=notes)
+        result = run_agent(
+            company_name=company,
+            persona_title=persona,
+            notes=notes,
+            sales_role=sales_role,
+            product_name=product_name,
+            product_benefits=product_benefits,
+            target_use_case=target_use_case,
+        )
         saved_path = save_output(result, company)
         return jsonify({"result": result, "saved_as": str(saved_path)})
     except anthropic.AuthenticationError:
