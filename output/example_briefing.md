@@ -1,92 +1,135 @@
 # Sales Call Brief
 
-**Company:** Acme Logistics
-**Persona:** VP of Operations
-**Generated:** 2026-05-29 16:07
+**Company:** Gusto
+**Persona:** VP of Sales
+**Generated:** 2026-05-29 18:57
 
 ---
 
 ## Account
 
-Acme Logistics (likely operating as Acme Distribution, confirmed via acmedistribution.com) is a Midwest-based 3PL that has historically focused on warehousing and distribution. They recently expanded into last-mile delivery (confirmed per rep notes) and have previously adopted third-party supply chain software, specifically Magaya Supply Chain, to support operational growth (confirmed, though the 2020 selection means their current stack may have changed). They appear to be in active expansion mode, including a national truckload service through a partner carrier network (confirmed via Supply Chain Brain), which suggests deliberate moves toward broader service coverage rather than organic drift.
-
----
+Gusto (confirmed) is a late-stage private HR and payroll software company serving SMBs, with an estimated $975M in 2024 revenue growing at roughly 30% year-over-year (Sacra, confirmed). The company employs approximately 2,400 people (confirmed) and competes in an intensifying market against Rippling, ADP, Paycor, and others, with Rippling in particular pushing aggressively upmarket (confirmed). Gusto is in an active sales hiring phase (confirmed per rep notes), which means its go-to-market motion is scaling faster than the processes that support it.
 
 ## Persona
 
-The VP of Operations at a mid-market 3PL in last-mile expansion mode is likely accountable for on-time delivery rates, cost per shipment, and carrier or driver utilization across a business that was not originally built for final-mile work. Day-to-day, they are probably managing the friction of running an unfamiliar service line with tools, staff, and processes designed for a different operating model. They are measured on margin and service reliability, and right now, both are likely under pressure from the expansion.
-
----
-
-## Likely Priorities
-
-- **Likely:** Getting last-mile delivery operations stable and predictable before scaling further, including building repeatable routing and exception-handling processes that do not depend on tribal knowledge.
-- **Likely:** Keeping delivery costs under control as the company enters a service line with higher per-stop variability than their historical freight business.
-- **Likely:** Demonstrating that the last-mile expansion can perform at a level that retains and grows shipper relationships, especially given customer expectations shaped by Amazon-level delivery experiences.
-- **Possible:** Evaluating or consolidating the tech stack to reduce the number of disconnected tools the operations team is managing across warehousing, truckload, and last-mile.
-
----
+The VP of Sales at Gusto owns revenue attainment, pipeline health, and forecast accuracy across a team that is actively expanding headcount. Day-to-day, this person is likely managing the tension between hitting near-term number commitments to the board or CEO and building the process infrastructure needed to sustain a larger team (likely). They are measured on quota attainment, forecast accuracy, and how fast new reps ramp to productivity (likely).
 
 ## Potential Pain Points
 
-**Pain:** The operations team is routing last-mile deliveries manually or with tools that were not built for high-stop, time-sensitive final-mile work.
-**Why it matters:** Manual routing at scale drives up fuel spend, increases missed delivery windows, and puts the VP in a position of defending preventable service failures to shippers.
-**Signal to listen for:** "We're still figuring out the routing side" or any mention of dispatchers making judgment calls on the fly.
+**Pain:** New reps joining at pace are submitting pipeline that lacks the depth or hygiene to forecast reliably, making the weekly commit call a mix of real signal and noise.
+**Why it matters:** If the VP is presenting to a CEO or board with a $1B revenue trajectory, a missed forecast is not just an operational problem. It is a credibility problem at a moment when the company is making significant investment bets based on those numbers.
+**Signal to listen for:** "Our commit calls are taking longer" or "I'm spending too much time sanity-checking pipeline" or "I don't fully trust what my reps are putting in."
+**Addressed by:** Forecast accuracy and pipeline blind spot features, specifically the ability to surface deal risk based on activity signals rather than rep-entered data.
 
 ---
 
-**Pain:** The existing tech stack (likely centered on Magaya or a similar warehouse-first platform) was not designed with last-mile routing or real-time delivery visibility in mind.
-**Why it matters:** Running last-mile on a platform built for warehousing creates blind spots in delivery status, which directly affects the VP's ability to manage exceptions before they become complaints.
-**Signal to listen for:** Any mention of customers calling in for delivery updates, or the team using a separate spreadsheet or app for final-mile tracking.
+**Pain:** Deal risk is likely being caught late in the quarter because the visibility into individual rep conversations and buyer engagement is inconsistent across a growing team.
+**Why it matters:** Late-stage deal slippage is the single fastest way to blow a quarterly number on a scaling team. At Gusto's growth rate, one bad quarter compounds: missed targets slow hiring plans, which slows the next revenue cycle.
+**Signal to listen for:** "We keep getting surprised at the end of the quarter" or "deals we thought were solid go quiet in the last two weeks."
+**Addressed by:** Deal risk identification and call insights features that flag disengagement or stall signals earlier in the cycle.
 
 ---
 
-**Pain:** The VP is managing last-mile operations with a team that has deep freight and warehousing experience but limited final-mile expertise.
-**Why it matters:** Staffing gaps in an unfamiliar service line mean the VP carries more operational risk personally, and mistakes in last-mile are highly visible to shippers in a way that back-of-house warehouse errors are not.
-**Signal to listen for:** Comments about the team being stretched, or needing to hire before they can grow the last-mile book of business.
+**Pain:** Coaching a rapidly growing rep team without consistent, structured call data means managers are coaching on feel rather than evidence, which slows ramp time and leaves performance gaps invisible until they show up in the number.
+**Why it matters:** At Gusto's stage of hiring, rep ramp time is a direct drag on revenue capacity. A 90-day ramp instead of a 60-day ramp across 20 new hires is a material pipeline problem, not just an enablement issue.
+**Signal to listen for:** "We don't have a consistent way to review calls" or "our managers are stretched thin" or "ramp time has gotten longer as we've grown."
+**Addressed by:** Rep coaching using call insights, which gives managers a structured, evidence-based coaching workflow without requiring them to sit on every call.
 
 ---
 
-**Pain:** Without route optimization, the company may be underestimating the true cost per delivery on the last-mile side, making it difficult to price the service competitively and still protect margin.
-**Why it matters:** If the VP cannot demonstrate last-mile margin health, the expansion looks like a cost center rather than a growth engine, which is a tough position in a mid-market 3PL where every service line has to pull its weight.
-**Signal to listen for:** Uncertainty about cost-per-stop figures, or pricing described as "roughly what the market is charging."
+**Pain:** The current forecasting process is likely built around CRM data that reps enter manually, which degrades in accuracy as team size grows and rep discipline becomes harder to enforce at scale (likely).
+**Why it matters:** Manual CRM hygiene is a process that works at 10 reps and breaks at 30. If Gusto's VP of Sales is in the middle of that transition, the forecast is becoming less reliable at the exact moment it needs to be more reliable.
+**Signal to listen for:** "CRM hygiene is a constant battle" or "I can't tell if the forecast number reflects reality or what reps think I want to hear."
+**Addressed by:** Pipeline blind spot reduction and activity-based deal signals that reduce dependence on rep-entered data.
 
 ---
 
-**Pain:** If Acme is using a third-party carrier network for last-mile rather than owned fleet, route optimization and delivery performance visibility may feel out of their control entirely.
-**Why it matters:** The VP still owns the service level commitment to the shipper even when execution is outsourced, which creates accountability without control and is one of the most frustrating operational positions to be in.
-**Signal to listen for:** "We rely on our carriers to handle that" when asked about delivery windows or on-time performance.
+**Pain:** If an incumbent tool is already in place (possible: Clari, Gong, Chorus, or similar), the VP may be experiencing coverage gaps, low adoption, or a tool that was scoped for a smaller or different team and has not scaled well with the current hiring pace.
+**Why it matters:** Incumbents often get purchased for one use case (call recording, for example) and never fully activated for forecasting or coaching. This creates a situation where the budget is spent but the problem is not solved.
+**Signal to listen for:** "We have Gong but we're not really using it for forecasting" or "we bought something last year but adoption has been mixed" or "we're not getting full value out of what we have."
+**Addressed by:** Full platform capability across forecasting, deal risk, and coaching, which can either complement or replace a single-point incumbent.
 
----
+## Stakeholder Map
+
+**Economic Buyer (likely): VP of Sales (your contact)**
+They own the budget and the problem. At a company of Gusto's size and stage, the VP of Sales likely has discretionary budget authority for tools in this category, but may need CFO sign-off above a certain threshold. Their primary motivation is forecast predictability and team performance at scale.
+
+**Champion (likely): VP of Sales, doubling as champion**
+Because this is inbound, they already have some personal motivation. The risk is that they are early-stage curious rather than actively building a business case. Qualify this early.
+
+**Influencer or Technical Evaluator (likely): Sales Operations or Revenue Operations Lead**
+This person likely owns the CRM, reporting infrastructure, and any existing forecasting tooling. They will have opinions on integration complexity, data integrity, and whether the current stack can be extended instead of replaced. Do not let this call end without knowing who owns RevOps and what they think.
+
+**User (likely): Front-line Sales Managers**
+They will live in this tool for coaching and pipeline reviews. If they do not see immediate value in their weekly workflow, adoption will be low and the VP's business case will not hold up at renewal. Useful to reference in the business case framing.
+
+**Potential Blocker (possible): IT or Security**
+At a $10B valuation private company with significant HR and payroll data, IT and security review for any new vendor is likely a formal step. This is not an early-call concern but worth flagging before procurement.
+
+**Who to prioritize:** Your contact is both the buyer and the likely champion for now. The most important second call to set up is with the RevOps or Sales Ops lead, because they will either accelerate or slow down the evaluation depending on what the current stack looks like and how painful the integration question is.
+
+## Business Case Angle
+
+Gusto's VP of Sales is scaling headcount aggressively into a forecasting process that was likely built for a smaller, more experienced team. Every new rep added to the team introduces pipeline data that is thinner, less reliable, and more dependent on rep judgment that has not yet been calibrated to the company's sales motion. The commercial cost of this is not abstract: a forecast that is wrong by 10 to 15 percent at Gusto's revenue scale represents tens of millions of dollars in misallocated resources, missed hiring decisions, and credibility loss with leadership. A Revenue Intelligence Platform addresses this by grounding the forecast in observed deal activity rather than rep-entered data, giving the VP a number they can defend to the CEO or board without spending hours manually reviewing pipeline. The supporting case, which the VP can use internally, is the reduction in manager time spent on coaching and deal reviews, which compounds in value as headcount grows and manager spans widen.
+
+## Competitive Read
+
+- **Likely: Salesforce as CRM, with native or bolt-on forecasting.** At Gusto's scale and B2B motion, Salesforce is the most probable CRM. Native Salesforce forecasting is widely used but frequently criticized for being dependent on rep-entered data and lacking deal risk signals. The angle here is not to displace Salesforce but to layer intelligence on top of it.
+
+- **Possible: Gong or Chorus for conversation intelligence.** If a call recording tool is already in place, the VP may believe they have the coaching and deal insight problem covered. The displacement angle is whether they are actually using that data for forecasting and pipeline decisions, or whether it lives in a separate workflow that managers do not connect to their commit calls.
+
+- **Possible: Clari or a similar forecasting point solution.** If Clari is already in place, the conversation shifts to whether it is actually being used, whether adoption is where it needs to be, and whether the coaching and call insight layer is missing. The angle is consolidation and activation rather than net-new category.
+
+## Risks and Watch-outs
+
+**Risk: This is early-stage exploration, not an active initiative.**
+Inbound signals interest, not urgency. Test this directly: ask what triggered the inquiry and whether there is a specific problem or timeline driving the evaluation. If the answer is vague, the deal cycle will be long and low-priority.
+
+**Risk: The VP does not own the budget or is not the final decision-maker.**
+A VP of Sales title at a $10B company can mean very different things in terms of budget authority. Test by asking how they have evaluated and purchased tools like this in the past and who else was part of that process.
+
+**Risk: An incumbent is entrenched and the real objection is switching cost, not product fit.**
+If Gong, Clari, or a similar tool is already in place, the question is whether the VP is dissatisfied enough to go through a replacement cycle or whether they are exploring a point gap. Test by asking directly what they are using today and what is not working about it.
+
+## Recommended Next Step
+
+Before closing the call, propose a scoped forecast accuracy diagnostic: a working session where you map the VP's current forecasting workflow, identify the specific stages where signal degrades (new rep pipeline, late-stage commit, deal slippage patterns), and show concretely where the platform would add visibility. This is more valuable than a generic demo because it forces the VP to articulate the problem in their own terms and gives you the detail you need to build a relevant business case. Include the RevOps or Sales Ops lead in that session if they exist.
 
 ## Discovery Questions
 
-1. Walk me through what actually happens from the moment a last-mile order hits your system to when a driver leaves the building. Where does your team spend the most time in that process?
+1. What specifically happened that made this a priority right now? Was there a moment this quarter, a board conversation, a missed number, something concrete?
 
-2. When a delivery goes wrong, how does your team find out, and what does it take to get in front of it before the shipper calls you?
+2. Walk me through your last commit call. Where did the number come from, and at what point in that process did you feel like you were working with real signal versus what reps think you want to hear?
 
-3. If I asked you right now what your average cost per stop was last month, what would you tell me, and how confident are you in that number?
+3. As you have added headcount over the past two or three quarters, where in the pipeline has your visibility gotten worse? What are you doing today to compensate for that?
 
-4. What did you have to build, buy, or improvise to run last-mile that you did not already have in place from the freight and warehousing side of the business?
+4. What are you using right now for forecasting and call reviews beyond your CRM, and what is not working about it?
 
-5. What would have to change operationally before you felt comfortable doubling the last-mile volume you are running today?
-
----
+5. When you picture this problem being solved, what specifically are you able to do differently in your quarterly review with the CEO or board that you cannot do today?
 
 ## Sample Outreach
 
-**Subject:** Last-mile routing at a warehouse-first 3PL
+**Channel: Email (pre-call confirmation)**
 
-Hi [Name], most routing tools are built for companies that started in last-mile. Standing one up inside an established warehousing and freight operation is a different problem, because the team, the tech stack, and the processes were all designed for something else. We work with mid-market 3PLs navigating exactly that gap. Open to a 20-minute call to compare notes on where the friction usually shows up?
+**Subject:** Thursday's call, Gusto forecasting workflow
+
+Hi [Name],
+
+Ahead of Thursday, I want to make sure we spend the time on what actually prompted you to reach out rather than a general walkthrough.
+
+My plan is to map where your current forecasting process holds up and where it starts to break down as headcount grows. If there is a real gap, I want to come out of the call with a concrete next step, not a follow-up to schedule a follow-up.
+
+Anything you want to add before we talk?
+
+[Your name]
 
 ## Assumptions and Gaps
 
-- **Fleet model is unknown.** Whether Acme runs owned delivery vehicles or relies on a carrier network for last-mile changes the relevance of route optimization significantly. Confirm early.
-- **Last-mile expansion timeline and scale are unconfirmed.** The rep notes say they recently expanded, but "recently" could mean six months or two years. The stage of maturity changes the pitch angle.
-- **Current tech stack is uncertain.** The Magaya selection was confirmed in 2020, but it is unknown whether that platform is still in use, whether a TMS has been added, and whether any routing tools are already in place.
-- **Delivery volume and fleet size are unknown.** Without this, it is hard to size the problem or the opportunity.
-- **It is unconfirmed whether the VP of Operations is the right contact.** The Director of Operations named in the research (Kush Narula) may be the more relevant day-to-day owner, depending on how responsibilities are divided. Worth clarifying before the call.
-- **The trigger for the last-mile expansion is unknown.** Whether it was a customer request, a competitive move, or a leadership initiative affects how the VP frames success and who the internal stakeholders are.
+- The triggering event for the inbound lead is unknown. This is the most important thing to uncover in the first two minutes of the call, because it determines whether this is an active initiative or passive exploration and sets the tone for the entire conversation.
+- Gusto's current sales stack is unconfirmed. Whether Salesforce, HubSpot, or another CRM is in use, and whether any forecasting or conversation intelligence tool is already in place, must be resolved early to avoid pitching into an incumbent without knowing it.
+- The VP's tenure and relationship to the current sales process is unknown. Whether they built the existing process or inherited it affects how much they will own the problem and how much political risk a change carries for them personally.
+- Budget authority and deal process are unconfirmed. Whether this VP can approve a purchase in this category independently or requires a formal procurement process is unknown and should be qualified before investing in a full evaluation cycle.
+- The size and structure of the sales team (number of reps, segments, geographic spread) is unconfirmed, which limits the ability to size the business case before the call.
 
 ---
 
@@ -94,16 +137,20 @@ Hi [Name], most routing tools are built for companies that started in last-mile.
 
 ## Brief Review
 
-**Pain point 5 (carrier accountability without control)** is slightly generic. It applies to any outsourced logistics operation. Tie it explicitly to Acme's partner carrier network confirmed via Supply Chain Brain.
+**Issue: "Sample Outreach" section is misplaced.**
+This brief is for a discovery call, not outreach. Remove it or move it to an appendix note.
 
-**Discovery question 4** risks a yes/no answer if the prospect reads it defensively. Reframe as: "What was the hardest gap to close when you moved into last-mile?"
+**Issue: Stakeholder map labels the VP as both economic buyer and champion without adequately flagging the risk this creates.**
+Add one sentence noting that a single-person champion with no internal advocate is a pipeline risk, not just a structural observation.
 
-**"Possible" tech stack consolidation priority** is labeled correctly but reads like filler. Cut it or anchor it to the 2020 Magaya selection as the specific reason to suspect fragmentation.
+**Issue: The IT/Security blocker note is accurate but orphaned.**
+It appears with no guidance on when or how to surface it. Add a one-line prompt on where in the deal cycle to raise it.
 
-**Sample outreach subject line** is descriptive but passive. Test a version that names the friction directly, something like "Routing inside a warehouse-first 3PL."
+**Issue: "Competitive Read" lists Salesforce as a CRM, not a competitor.**
+The section header implies direct competition. Rename it "Stack and Displacement Considerations" to match what the section actually covers.
 
 ---
 
-Everything else holds up. A senior rep could walk into this call without rewriting it.
+Everything else is strong and specific to this account and role.
 
-**If forced to flag one section:** the pain points. Number five needs tightening before it earns its place.
+**Final test:** A senior AE would use this brief with minor edits. The section most likely to get rewritten is **Sample Outreach**, because it does not belong here at all.

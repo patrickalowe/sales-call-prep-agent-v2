@@ -47,5 +47,21 @@ only), add --no-search:
 
   python3 main.py --no-search
 
-To change how many searches run, edit the _SEARCH_QUERIES list near the
-top of agent.py (one line = one search).
+To change the searches, edit _SEARCH_QUERIES_BASE (runs for every role)
+and _SEARCH_QUERIES_BY_ROLE (the one role-specific query) near the top of
+agent.py.
+
+=== SALES ROLE AND PRODUCT (optional) ===
+
+The brief adapts to your sales role. Pass --sales-role SDR (or BDR, same
+brief) for a short outbound brief, or --sales-role AE (the default) for a
+deeper discovery brief. You can also pass product context so the brief
+ties to what you sell:
+
+  python3 main.py --company "Gusto" --persona "VP of Sales" \
+    --sales-role AE \
+    --product-name "Revenue Intelligence Platform" \
+    --product-benefits "Improves forecast accuracy, flags deal risk early" \
+    --target-use-case "forecasting for a scaling sales team"
+
+Running plain "python3 main.py" will ask for all of this interactively.
