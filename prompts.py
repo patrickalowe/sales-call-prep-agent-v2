@@ -127,9 +127,14 @@ Planning notes:
 Background context:
 {context}
 
-Build the brief for the {sales_role} workflow. Do not write a title or top-level heading; start directly at the first section header below. Use the markdown headers exactly as written. Match the depth to the role: an SDR or BDR skims this in under a minute, so keep their brief tight and every section short; an AE preps a full discovery call, so give them depth.
+Build the brief for the {sales_role} workflow. Do not write a title or top-level heading; start directly at the first section header below. Use the markdown headers exactly as written. Match the depth to the role: an SDR or BDR brief stays tight and skimmable, every section short and free of padding; an AE preps a full discovery call, so give them depth.
 
-Start with these three sections for every role:
+If the role is SDR or BDR, the brief opens with this gate, before Account:
+
+## Before You Send
+One or two lines. Is the target contact verified, and is there a real, dated why-now? If either is unverified, say "Verify before sending" and name what to check. If both hold up, say "Clear to send."
+
+Then, for every role, these three sections:
 
 ## Account
 2 to 3 sentences (1 to 2 for SDR or BDR) on what the company does, who they serve, and their current situation. Label each claim as confirmed, likely, or possible.
@@ -150,11 +155,8 @@ Then include the middle sections that match the role.
 
 If the role is SDR or BDR, include exactly these, kept short:
 
-## Why Now
-2 to 3 bullets on timely reasons to reach out now (a recent event, hire, launch, or signal), each labeled confirmed, likely, or possible. If there is no real "why now," say so rather than inventing one.
-
-## Personalization Hooks
-2 to 3 specific openers tied to something true about this company or person. No flattery, no "I came across your profile."
+## Why Now and Opener
+The single best reason to reach out now (a recent event, hire, launch, or signal), labeled confirmed, likely, or possible, and 1 to 2 specific opener lines built from it and tied to something true about this company or person. No flattery, no "I came across your profile." If there is no real trigger, say so and lead with the strongest company-specific hook instead of manufacturing urgency.
 
 ## Likely Objections
 2 to 3 objections this persona is likely to raise about a product in this category, including how {product_name} differs from an incumbent tool they may already use (a call-recording or forecasting tool, for example). Give each a one-line honest response grounded in a specific product benefit, not a general claim. Do not overclaim.
@@ -179,9 +181,9 @@ One concrete next step that validates the target use case (for example a scoped 
 Then end with these three sections for every role. Keep these headers verbatim, in this exact order:
 
 ## Discovery Questions
-A first pass at 5 open-ended questions, role-appropriate. The refinement step sharpens these, so do not over-polish here.
-- If the role is SDR or BDR, these qualify the account (fit, timing, pain, authority); at least one must test fit for the target use case specifically (do they have this problem, at enough scale to care).
-- If the role is AE, these go deep on current state, business impact, decision process, and success criteria; at least one must probe the current state that a major product benefit would improve.
+A first pass of open-ended questions, role-appropriate. The refinement step sharpens these, so do not over-polish here.
+- If the role is SDR or BDR: exactly 3 that qualify the account (fit, timing, pain, authority); at least one must test fit for the target use case specifically (do they have this problem, at enough scale to care).
+- If the role is AE: exactly 5 that go deep on current state, business impact, decision process, and success criteria; at least one must probe the current state that a major product benefit would improve.
 
 ## Sample Outreach
 A first draft under 100 words with a subject line. The refinement step tightens it, so do not over-polish here.
@@ -189,7 +191,8 @@ A first draft under 100 words with a subject line. The refinement step tightens 
 - If the role is AE: a brief pre-call or follow-up note that confirms the agenda and points to the recommended next step.
 
 ## Assumptions and Gaps
-Bullet list of what is uncertain or needs verifying before the call."""
+- If the role is SDR or BDR: one line only. The Before You Send gate already covers what to verify, so note just the single biggest remaining unknown, or write "None beyond the gate above."
+- If the role is AE: a short bullet list of what is uncertain or needs verifying before the call."""
 
 
 REFINEMENT_PROMPT = """Improve two sections of this draft sales call brief: the Discovery Questions and the Sample Outreach. Leave every other section untouched and out of your response.
@@ -203,9 +206,9 @@ Full brief for context:
 
 Rewrite the two sections to a higher standard:
 
-Discovery Questions: pressure-test all five. Replace any that can be answered with yes or no, that lead the prospect to an answer, that stack two questions into one, or that are generic enough to ask any company. Keep exactly five open-ended questions that connect to this persona's day-to-day, and keep at least one tied to the target use case or a specific product benefit.
-- If the role is SDR or BDR, they must qualify (fit, timing, pain, authority) while still sounding conversational.
-- If the role is AE, they must go deep on current state, business impact, decision process, and success criteria.
+Discovery Questions: pressure-test them. Replace any that can be answered with yes or no, that lead the prospect to an answer, that stack two questions into one, or that are generic enough to ask any company. Keep at least one tied to the target use case or a specific product benefit.
+- If the role is SDR or BDR, keep exactly 3 that qualify (fit, timing, pain, authority) while still sounding conversational.
+- If the role is AE, keep exactly 5 that go deep on current state, business impact, decision process, and success criteria.
 
 Sample Outreach: tighten it. Keep it under 100 words with a specific subject line. The subject line must be specific enough that deleting the company name would make it meaningless. The opening line must reference something real from the brief, not flattery. Cut any sentence that uses the words "help," "solution," "value," or "leverage."
 - If the role is SDR or BDR, this is a cold message whose only ask is to book a short meeting. Keep the channel note and the one-line follow-up.
